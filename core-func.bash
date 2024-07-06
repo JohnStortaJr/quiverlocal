@@ -9,18 +9,28 @@ function installRequiredPackages() {
 function getSiteName() {
     read -p "${bold}Site Name ${normal}[localdev01]: " userin_SITE_NAME
     SITE_NAME="${userin_SITE_NAME:=$SITE_NAME}"
+    SITE_NAME="`echo ${SITE_NAME} | sed 's|\\/|_|g'`"
+    SITE_NAME="`echo ${SITE_NAME} | sed 's|\\\|_|g'`"
+
     DOMAIN_NAME=$SITE_NAME.local
-    DB_NAME="${SITE_NAME}_db"
+
+    DB_NAME="`echo ${SITE_NAME} | sed 's|\.|_|g'`_db"
 }
 
 function getDomainName() {
     read -p "${bold}Domain Name ${normal}[$DOMAIN_NAME]: " userin_DOMAIN_NAME
     DOMAIN_NAME="${userin_DOMAIN_NAME:=$DOMAIN_NAME}"
+
+    DOMAIN_NAME="`echo ${DOMAIN_NAME} | sed 's|\\/|_|g'`"
+    DOMAIN_NAME="`echo ${DOMAIN_NAME} | sed 's|\\\|_|g'`"
 }
 
 function getDatabaseName() {
     read -p "${bold}Database Name ${normal}[$DB_NAME]: " userin_DB_NAME
     DB_NAME="${userin_DB_NAME:=$DB_NAME}"
+    DB_NAME="`echo ${DB_NAME} | sed 's|\\/|_|g'`"
+    DB_NAME="`echo ${DB_NAME} | sed 's|\\\|_|g'`"
+    DB_NAME="`echo ${DB_NAME} | sed 's|\.|_|g'`"
 }
 
 function getDatabaseUser() {
@@ -41,6 +51,15 @@ function getImportFile() {
 function getImportData() {
     read -p "${bold}Database File ${normal}[$IMPORT_DATA]: " userin_IMPORT_DATA
     IMPORT_DATA="${userin_IMPORT_DATA:=$IMPORT_DATA}"
+    SQL_FILE=`echo ${IMPORT_DATA} | sed 's|\.gz||g'`
+}
+
+function getCertificate() {
+    read -p "${bold}Certificate File (.crt)${normal}[$CERT_FILE]: " userin_CERT_FILE
+    CERT_FILE="${userin_CERT_FILE:=$CERT_FILE}"
+
+    read -p "${bold}Certificate Key File (.key)${normal}[$CERT_KEY_FILE]: " userin_CERT_KEY_FILE
+    CERT_KEY_FILE="${userin_CERT_KEY_FILE:=$CERT_KEY_FILE}"
 }
 
 
@@ -93,6 +112,36 @@ function createApacheConfig() {
     sudo a2enmod rewrite
 }
 
+function trustSite() {
+    # Should check to make sure there is not already a 443 block in the file
+    cp $APACHE_CONF/$SITE_NAME.conf $QUIVER_ROOT/tmp/thttpsconf
+
+    cat $QUIVER_ROOT/default_https.conf >> $QUIVER_ROOT/tmp/thttpsconf
+
+    sed -i "s|__DOMAINDIR__|$DOMAIN_NAME|g" $QUIVER_ROOT/tmp/thttpsconf
+    sed -i "s|__CORECONFIG__|$DOMAIN_CONFIG/$SITE_NAME|g" $QUIVER_ROOT/tmp/thttpsconf
+    sed -i "s|__CERTFILE__|$CERT_FILE|g" $QUIVER_ROOT/tmp/thttpsconf
+    sed -i "s|__CERTKEYFILE__|$CERT_KEY_FILE|g" $QUIVER_ROOT/tmp/thttpsconf
+
+    sudo mv $QUIVER_ROOT/tmp/thttpsconf $APACHE_CONF/$SITE_NAME.conf
+    sudo chown root: $APACHE_CONF/$SITE_NAME.conf
+
+    # Enable the mod_ssl module
+    sudo a2enmod ssl
+
+    # Update the siteurl and home values in the database
+    # Get the table prefix
+    TABLE_PREFIX=`grep table_prefix ${DOMAIN_HOME}/${DOMAIN_NAME}/wp-config.php | sed -n "s/^.*'\(.*\)'.*$/\1/ p"`
+    echo $TABLE_PREFIX
+
+    # Update siteurl and home values
+    SITE_QUERY="UPDATE ${TABLE_PREFIX}options SET option_value = 'https://${DOMAIN_NAME}' WHERE ${TABLE_PREFIX}options.option_name = 'siteurl'"
+    HOME_QUERY="UPDATE ${TABLE_PREFIX}options SET option_value = 'https://${DOMAIN_NAME}' WHERE ${TABLE_PREFIX}options.option_name = 'home'"
+
+    sudo mysql -u root $DB_NAME -e "${SITE_QUERY}"
+    sudo mysql -u root $DB_NAME -e "${HOME_QUERY}"
+}
+
 
 ### Setup empty database
 function createEmptyDatabase() {
@@ -134,6 +183,58 @@ function createWordPressConfig() {
     cp $QUIVER_ROOT/tmp/twpconf $DOMAIN_HOME/$DOMAIN_NAME/wp-config.php
 }
 
+### Update existing WordPress config
+function updateWordPressConfig() {
+    cp $DOMAIN_HOME/$DOMAIN_NAME/wp-config.php $QUIVER_ROOT/tmp/twpconf
+
+    # Remove cache entry
+    sed -i "/WPCACHEHOME/d" $QUIVER_ROOT/tmp/twpconf
+
+    # Replace database connection information with local values
+    NEW_DB_NAME_STRING="define( 'DB_NAME', '${DB_NAME}' );"
+    NEW_DB_USER_STRING="define( 'DB_USER', '${DB_USER}' );"
+    NEW_DB_PASS_STRING="define( 'DB_PASSWORD', '${DB_PASS}' );"
+    NEW_DB_HOST_STRING="define( 'DB_HOST', 'localhost' );"
+    sed -i "s|.*'DB_NAME'.*|$NEW_DB_NAME_STRING|g" $QUIVER_ROOT/tmp/twpconf
+    sed -i "s|.*'DB_USER'.*|$NEW_DB_USER_STRING|g" $QUIVER_ROOT/tmp/twpconf
+    sed -i "s|.*'DB_PASSWORD'.*|$NEW_DB_PASS_STRING|g" $QUIVER_ROOT/tmp/twpconf
+    sed -i "s|.*'DB_HOST'.*|$NEW_DB_HOST_STRING|g" $QUIVER_ROOT/tmp/twpconf
+
+    echo "Updating SALTs"
+    NEW_AUTH_KEY="define( 'AUTH_KEY',         '`openssl rand -base64 48`' );"
+    NEW_SECURE_AUTH_KEY="define( 'SECURE_AUTH_KEY',  '`openssl rand -base64 48`' );"
+    NEW_LOGGED_IN_KEY="define( 'LOGGED_IN_KEY',    '`openssl rand -base64 48`' );"
+    NEW_NONCE_KEY="define( 'NONCE_KEY',        '`openssl rand -base64 48`' );"
+    NEW_AUTH_SALT="define( 'AUTH_SALT',        '`openssl rand -base64 48`' );"
+    NEW_SECURE_AUTH_SALT="define( 'SECURE_AUTH_SALT', '`openssl rand -base64 48`' );"
+    NEW_LOGGED_IN_SALT="define( 'LOGGED_IN_SALT',   '`openssl rand -base64 48`' );"
+    NEW_NONCE_SALT="define( 'NONCE_SALT',       '`openssl rand -base64 48`' );"
+
+    sed -i "s|.*'AUTH_KEY.*|$NEW_AUTH_KEY|g" $QUIVER_ROOT/tmp/twpconf
+    sed -i "s|.*'SECURE_AUTH_KEY.*|$NEW_SECURE_AUTH_KEY|g" $QUIVER_ROOT/tmp/twpconf
+    sed -i "s|.*'LOGGED_IN_KEY.*|$NEW_LOGGED_IN_KEY|g" $QUIVER_ROOT/tmp/twpconf
+    sed -i "s|.*'NONCE_KEY.*|$NEW_NONCE_KEY|g" $QUIVER_ROOT/tmp/twpconf
+    sed -i "s|.*'AUTH_SALT.*|$NEW_AUTH_SALT|g" $QUIVER_ROOT/tmp/twpconf
+    sed -i "s|.*'SECURE_AUTH_SALT.*|$NEW_SECURE_AUTH_SALT|g" $QUIVER_ROOT/tmp/twpconf
+    sed -i "s|.*'LOGGED_IN_SALT.*|$NEW_LOGGED_IN_SALT|g" $QUIVER_ROOT/tmp/twpconf
+    sed -i "s|.*'NONCE_SALT.*|$NEW_NONCE_SALT|g" $QUIVER_ROOT/tmp/twpconf
+
+    cp $QUIVER_ROOT/tmp/twpconf $DOMAIN_HOME/$DOMAIN_NAME/wp-config.php
+
+    # Get the table prefix
+    TABLE_PREFIX=`grep table_prefix ${DOMAIN_HOME}/${DOMAIN_NAME}/wp-config.php | sed -n "s/^.*'\(.*\)'.*$/\1/ p"`
+    echo $TABLE_PREFIX
+
+    # Update siteurl and home values
+    SITE_QUERY="UPDATE ${TABLE_PREFIX}options SET option_value = 'http://${DOMAIN_NAME}' WHERE ${TABLE_PREFIX}options.option_name = 'siteurl'"
+    HOME_QUERY="UPDATE ${TABLE_PREFIX}options SET option_value = 'http://${DOMAIN_NAME}' WHERE ${TABLE_PREFIX}options.option_name = 'home'"
+
+    sudo mysql -u root $DB_NAME -e "${SITE_QUERY}"
+    sudo mysql -u root $DB_NAME -e "${HOME_QUERY}"
+
+    # Should update the WordPress admin password as well, but need to figure out how to identify it
+}
+
 function importFiles() {
     cd $DOMAIN_HOME
     tar -xzvf $IMPORT_FILE
@@ -145,6 +246,8 @@ function importFiles() {
 function importData() {
     echo "Importing Data"
     # No idea how to import the data from the command line. For now this can be imported easily enough through phpMyAdmin
+    gzip -d $IMPORT_DATA
+    sudo mysql -u root $DB_NAME < $SQL_FILE
 }
 
 # Restart Apache

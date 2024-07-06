@@ -21,7 +21,6 @@ APACHE_CONF=$APACHE_ROOT/sites-available
 APACHE_LOG=/var/log/apache2
 SITE_NAME="localdev01"
 DOMAIN_NAME="${SITE_NAME}.local"
-DB_NAME="${SITE_NAME}_db"
 DB_USER=wordpress
 DB_PASS=start123
 
@@ -73,5 +72,9 @@ changeApacheUser
 createCoreDomainConfig
 createApacheConfig
 createEmptyDatabase
-createWordPressConfig
+
+# Create new wp-config.php file from default template
+cp $DOMAIN_HOME/$DOMAIN_NAME/wp-config-sample.php $QUIVER_ROOT/tmp/twpconf
+
+updateWordPressConfig
 restartApache

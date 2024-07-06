@@ -1,0 +1,9 @@
+<VirtualHost dev1.johnstortajr.local:80>
+	Include /home/jstorta/domains/config/dev1.johnstortajr.core
+</VirtualHost>
+<VirtualHost __DOMAINDIR__:443>
+	SSLEngine on
+	SSLCertificateFile __CERTFILE__
+	SSLCertificateKeyFile __CERTKEYFILE__
+	Include __CORECONFIG__
+</VirtualHost>

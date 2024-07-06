@@ -1,13 +1,13 @@
-DocumentRoot /home/jstorta/domains/dev3.johnstortajr.local
+DocumentRoot /home/jstorta/domains/dev2.johnstortajr.local
 
-<Directory /home/jstorta/domains/dev3.johnstortajr.local>
+<Directory /home/jstorta/domains/dev2.johnstortajr.local>
     Options FollowSymLinks
     AllowOverride Limit Options FileInfo
     DirectoryIndex index.php
     Require all granted
 </Directory>
 
-<Directory /home/jstorta/domains/dev3.johnstortajr.local/wp-content>
+<Directory /home/jstorta/domains/dev2.johnstortajr.local/wp-content>
     Options FollowSymLinks
     Require all granted
 </Directory>

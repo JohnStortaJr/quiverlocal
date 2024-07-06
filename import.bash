@@ -81,5 +81,5 @@ createCoreDomainConfig
 createApacheConfig
 createEmptyDatabase
 importData
-createWordPressConfig
+updateWordPressConfig
 restartApache
