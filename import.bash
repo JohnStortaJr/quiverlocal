@@ -7,13 +7,15 @@ QUIVER_ROOT=`dirname "$(realpath $0)"`
 source $QUIVER_ROOT/core-func.bash
 
 # Run a sudo command to capture the password as soon as the script is run
-sudo echo "${bold}QuiverLocal WordPress Development Environment Tool${normal} (install)"
+sudo echo "${bold}QuiverLocal WordPress Development Environment Tool${normal} (import)"
 
 # Define key variables
 USER=`whoami`
 USER_HOME=/home/$USER
 CERT_HOME=$USER_HOME/certificates
 EXPORT_HOME=$USER_HOME/exports
+IMPORT_FILE=$EXPORT_HOME/NOFILE
+IMPORT_DATA=$EXPORT_HOME/NODATA
 DOMAIN_HOME=$USER_HOME/domains
 DOMAIN_CONFIG=$DOMAIN_HOME/config
 APACHE_ROOT=/etc/apache2
@@ -32,6 +34,8 @@ getDomainName
 getDatabaseName
 getDatabaseUser
 getDatabasePassword
+getImportFile
+getImportData
 
 echo ""
 echo "###########################"
@@ -56,22 +60,26 @@ echo "${bold}Database Name:${normal} $DB_NAME"
 echo "${bold}Database User:${normal} $DB_USER"
 echo "${bold}Database Password:${normal} $DB_PASS"
 
+echo "${bold}Import File:${normal} $IMPORT_FILE"
+echo "${bold}Import Data:${normal} $IMPORT_DATA"
+
 # Confirm that the user wishes to proceed given the provided configuration details
 read -p "Please verify the above configuration. Do you wish to proceed? [y:N]: " userGoNoGo
 goNoGo="${userGoNoGo:='n'}"
 
 # Abort the installation unless the user explicitly enters 'y' or 'Y'
 if [ $goNoGo != "y" ] && [ $goNoGo != "Y" ]; then
-    echo "Aborting installation!"
+    echo "Aborting import!"
     exit 0;
 fi
 
-# Configuration accepted. Proceed with the installation.
+# Configuration accepted. Proceed with the import.
 installRequiredPackages
-installLatestWordpress
+importFiles
 changeApacheUser
 createCoreDomainConfig
 createApacheConfig
 createEmptyDatabase
+importData
 createWordPressConfig
 restartApache
