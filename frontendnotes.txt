@@ -1,0 +1,40 @@
+THe front end needs to provide a menu of options
+
+List local instances
+  When instances are created or imported, save the list of key values in a config file. Perhaps build some sort of database just for this.
+  Indicate what local hosts entries are needed to access each instance
+Create new instance
+  Run the steps to collect key data and create a brand new instance.
+  if the name provided already exists in the database, then return an error
+  provide instructions for updating the local hosts file 
+Import site (and database)
+  Prompt for a gzipped wordpress file and a gzipped database export
+  Try to detect if input is gzipped and alter commands accordinly
+  prompt for local name, domain, dbname, etc..
+  Run the scripts to set it up and log it in local database
+Delete site
+  Display list of instances and ask to select which to delete. Prompt for confirmation and then delete all the necessary files
+List certificates
+  Need a database to track all cert files and their relationship with each other, including which sites they are used for
+Create new ROOT certificate
+  Create a new ROOT certificate and provide instructions on how to add it as trusted in Windows
+Create new local certificate
+  Rmeind that local certificates can be reused. Provide list of existing certs and provide option to exit and use one of those
+  Otherwise run through process to create new certificate and key using ROOT key
+Trust site
+  select which site to trust. Indicate which are not trusted and which are already trusted
+  If select a site that is already trusted, ask if they want to assign new certificates to this site
+  Ask if they want to create a new local certificate or use an existing
+  If create new, then run through the scripts to create a new certificate and then assign it to the selected site
+  If use existing, provide a list of the existing certificates and prompt which to use
+
+Provide links to website with full tutorials on exactly what is happening behind the scenes with each step.
+
+Package this up as a package that can be installed via dpkg. 
+
+hmmmm. I could setup a local website with the front-end. localhost/quiverlocal (similar to phpmyadmin)
+Still have the limitation of not being able to update the windows hosts file or the MMC, but I can try to tackle that later.
+
+
+
+  
