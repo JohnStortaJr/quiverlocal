@@ -10,15 +10,7 @@ source $QUIVER_ROOT/core-func.bash
 sudo echo "${bold}QuiverLocal WordPress Development Environment Tool${normal} (uninstall)"
 
 # Define key variables
-USER=`whoami`
-USER_HOME=/home/$USER
-DOMAIN_HOME=$USER_HOME/domains
-DOMAIN_CONFIG=$DOMAIN_HOME/config
-APACHE_ROOT=/etc/apache2
-APACHE_CONF=$APACHE_ROOT/sites-available
-SITE_NAME="localdev01"
-DOMAIN_NAME="${SITE_NAME}.local"
-DB_NAME="${SITE_NAME}_db"
+initializeVariables
 
 # Collect site details
 echo ""

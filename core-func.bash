@@ -5,6 +5,35 @@ function installRequiredPackages() {
     sudo apt install apache2 ghostscript jq libapache2-mod-php mysql-server php php-bcmath php-curl php-imagick php-intl php-json php-mbstring php-mysql php-xml php-zip
 }
 
+function initializeVariables() {
+    USER=`whoami`
+    USER_HOME=/home/$USER
+
+    CERT_HOME=$USER_HOME/certificates
+    EXPORT_HOME=$USER_HOME/exports
+    IMPORT_FILE=$EXPORT_HOME/NOFILE
+    IMPORT_DATA=$EXPORT_HOME/NODATA
+
+    DOMAIN_HOME=$USER_HOME/domains
+    DOMAIN_CONFIG=$DOMAIN_HOME/config
+
+    APACHE_ROOT=/etc/apache2
+    APACHE_CONF=$APACHE_ROOT/sites-available
+    APACHE_LOG=/var/log/apache2
+
+    SITE_NAME="localdev01"
+    DOMAIN_NAME="${SITE_NAME}.local"
+
+    DB_NAME="${SITE_NAME}_db"
+    DB_USER=wordpress
+    DB_PASS=start123
+
+    CERT_NAME="myCert"
+    CERT_DUR=365
+    CERT_KEY_FILE=$CERT_HOME/localcert.key
+    CERT_FILE=$CERT_HOME/localcert.crt
+}
+
 # Get User Inputs
 function getSiteName() {
     read -p "${bold}Site Name ${normal}[localdev01]: " userin_SITE_NAME

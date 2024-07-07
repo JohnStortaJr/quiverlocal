@@ -10,19 +10,7 @@ source $QUIVER_ROOT/core-func.bash
 sudo echo "${bold}QuiverLocal WordPress Development Environment Tool${normal} (install)"
 
 # Define key variables
-USER=`whoami`
-USER_HOME=/home/$USER
-CERT_HOME=$USER_HOME/certificates
-EXPORT_HOME=$USER_HOME/exports
-DOMAIN_HOME=$USER_HOME/domains
-DOMAIN_CONFIG=$DOMAIN_HOME/config
-APACHE_ROOT=/etc/apache2
-APACHE_CONF=$APACHE_ROOT/sites-available
-APACHE_LOG=/var/log/apache2
-SITE_NAME="localdev01"
-DOMAIN_NAME="${SITE_NAME}.local"
-DB_USER=wordpress
-DB_PASS=start123
+initializeVariables
 
 # Collect site details
 echo ""
@@ -78,3 +66,5 @@ cp $DOMAIN_HOME/$DOMAIN_NAME/wp-config-sample.php $QUIVER_ROOT/tmp/twpconf
 
 updateWordPressConfig
 restartApache
+
+# Write JSON to config database

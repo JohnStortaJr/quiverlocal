@@ -11,15 +11,7 @@ sudo echo "${bold}QuiverLocal WordPress Development Environment Tool${normal} (R
 echo " "
 
 # Define key variables
-USER=`whoami`
-USER_HOME=/home/$USER
-CERT_HOME=$USER_HOME/certificates
-CERT_NAME="myCert"
-CERT_DUR=365
-ROOT_CERT_KEY=$CERT_HOME/localcert.crt
-ROOT_CERT_
-CERT_FILE=$CERT_HOME/localcert.crt
-CERT_KEY_FILE=$CERT_HOME/localcert.key
+initializeVariables
 
 getCertificatePath
 getCertificateName

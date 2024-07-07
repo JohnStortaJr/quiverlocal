@@ -10,22 +10,7 @@ source $QUIVER_ROOT/core-func.bash
 sudo echo "${bold}QuiverLocal WordPress Development Environment Tool${normal} (import)"
 
 # Define key variables
-USER=`whoami`
-USER_HOME=/home/$USER
-CERT_HOME=$USER_HOME/certificates
-EXPORT_HOME=$USER_HOME/exports
-IMPORT_FILE=$EXPORT_HOME/NOFILE
-IMPORT_DATA=$EXPORT_HOME/NODATA
-DOMAIN_HOME=$USER_HOME/domains
-DOMAIN_CONFIG=$DOMAIN_HOME/config
-APACHE_ROOT=/etc/apache2
-APACHE_CONF=$APACHE_ROOT/sites-available
-APACHE_LOG=/var/log/apache2
-SITE_NAME="localdev01"
-DOMAIN_NAME="${SITE_NAME}.local"
-DB_NAME="${SITE_NAME}_db"
-DB_USER=wordpress
-DB_PASS=start123
+initializeVariables
 
 # Collect site details
 echo ""

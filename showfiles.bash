@@ -10,17 +10,7 @@ source $QUIVER_ROOT/core-func.bash
 sudo echo "${bold}QuiverLocal WordPress Development Environment Tool${normal} (files)"
 
 # Define key variables
-USER=`whoami`
-USER_HOME=/home/$USER
-CERT_HOME=$USER_HOME/certificates
-DOMAIN_HOME=$USER_HOME/domains
-DOMAIN_CONFIG=$DOMAIN_HOME/config
-APACHE_ROOT=/etc/apache2
-APACHE_CONF=$APACHE_ROOT/sites-available
-APACHE_LOG=/var/log/apache2
-SITE_NAME="localdev01"
-DOMAIN_NAME="${SITE_NAME}.local"
-DB_NAME="${SITE_NAME}_db"
+initializeVariables
 
 echo ""
 echo "${bold}## Certificates: ${normal}$USER_HOME/certificates"
