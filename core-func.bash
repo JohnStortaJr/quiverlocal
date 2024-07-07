@@ -54,6 +54,21 @@ function getImportData() {
     SQL_FILE=`echo ${IMPORT_DATA} | sed 's|\.gz||g'`
 }
 
+function getCertificatePath() {
+    read -p "${bold}Certificate Path ${normal}[$CERT_HOME]: " userin_CERT_HOME
+    CERT_HOME="${userin_CERT_HOME:=$CERT_HOME}"
+}
+
+function getCertificateName() {
+    read -p "${bold}Certificate Name ${normal}[$CERT_NAME]: " userin_CERT_NAME
+    CERT_NAME="${userin_CERT_NAME:=$CERT_NAME}"
+}
+
+function getCertificateDuration() {
+    read -p "${bold}Certificate Duration ${normal}[$CERT_DUR]: " userin_CERT_DUR
+    CERT_DUR="${userin_CERT_DUR:=$CERT_DUR}"
+}
+
 function getCertificate() {
     read -p "${bold}Certificate File (.crt)${normal}[$CERT_FILE]: " userin_CERT_FILE
     CERT_FILE="${userin_CERT_FILE:=$CERT_FILE}"
@@ -62,6 +77,15 @@ function getCertificate() {
     CERT_KEY_FILE="${userin_CERT_KEY_FILE:=$CERT_KEY_FILE}"
 }
 
+function createRootCertificate() {
+    echo " "
+    echo "${bold}Creating ROOT Certificate Private Key${normal} ${CERT_HOME}/${CERT_NAME}.key"
+    openssl genrsa -aes256 -out "${CERT_HOME}/${CERT_NAME}.key" 2048
+
+    echo " "
+    echo "${bold}Creating ROOT Certificate${normal} ${CERT_HOME}/${CERT_NAME}.pem"
+    openssl req -x509 -new -noenc -key "${CERT_HOME}/${CERT_NAME}.key" -sha256 -days $CERT_DUR -out "${CERT_HOME}/${CERT_NAME}.pem"
+}
 
 #Download the latest wordpress files, unpack them into the $DOMAIN_HOME, and rename the directory
 function installLatestWordpress() {
