@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
+import sys
 import json
 
-infile = open('localtest01.json')
+infile = open(sys.argv[1])
 
 indata = json.loads(infile.read())
 
-for i in indata:
-    print(i + " -> " + indata[i])
+print(indata[sys.argv[2]])
 
 infile.close()
