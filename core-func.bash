@@ -2,7 +2,7 @@
 
 # Install any of the required packages that are missing
 function installRequiredPackages() {
-    sudo apt install apache2 ghostscript libapache2-mod-php mysql-server php php-bcmath php-curl php-imagick php-intl php-json php-mbstring php-mysql php-xml php-zip
+    sudo apt install apache2 ghostscript jq libapache2-mod-php mysql-server php php-bcmath php-curl php-imagick php-intl php-json php-mbstring php-mysql php-xml php-zip
 }
 
 # Get User Inputs
