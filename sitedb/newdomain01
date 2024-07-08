@@ -1,0 +1,21 @@
+{
+    "site_name": "newdomain01",
+    "domain_name": "newdomain01.local",
+    "db_name": "dev2_johnstortajr_db",
+    "username": "jstorta",
+    "user_home": "/home/jstorta",
+    "cert_home": "/home/jstorta/certificates",
+    "export_home": "/home/jstorta/exports",
+    "domain_dir": "/home/jstorta/domains/dev2.johnstortajr.local",
+    "domain_conf": "/home/jstorta/domains/config/dev2.johnstortajr.core",
+    "apache_conf": "/etc/apache2/sites-available/dev2.johnstortajr.conf",
+    "db_user": "wordpress",
+    "db_pass": "start123",
+    "isTrusted": "false",
+    "cert_key_file": "/home/jstorta/certificates/localtest.key",
+    "cert_file": "/home/jstorta/certificates/localtest.crt",
+    "cert_ext_file": "/home/jstorta/certificates/localtest.ext",
+    "cert_csr_file": "/home/jstorta/certificates/localtest.csr",
+    "root_cert_key_file": "/home/jstorta/certificates/shenanigansCA20240701a.key",
+    "root_cert_file": "/home/jstorta/certificates/shenanigansCA20240701a.pem"
+}

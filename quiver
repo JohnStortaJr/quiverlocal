@@ -1,0 +1,68 @@
+#!/usr/bin/python3
+
+import os
+from smlib.core import *
+from smlib.info import *
+from smlib.format import *
+
+# Set all variables to their default values
+quiverHome = os.getcwd()
+quiverDB = quiverHome + "/sitedb"
+user = os.path.expanduser('~')
+userHome = os.getenv("HOME")
+certHome = userHome + "/certificates"
+exportHome = userHome + "/exports"
+importFile = exportHome + "/NOFILE"
+importData = exportHome + "/NODATA"
+domainHome = userHome + "/domains"
+domainConfig = domainHome + "/config"
+apacheRoot = "/etc/apache2"
+apacheConf = apacheRoot + "/sites-available"
+apacheLog = "var/log/apache2"
+siteName = "localdev01"
+domainName = siteName + ".local"
+dbName = siteName + "_db"
+dbUser = "wordpress"
+dbPass = "start123"
+certName = "myCert"
+certDuration = 365
+certKeyFile = certHome + "/localcert.key"
+certFile = certHome + "/localcert.crt"
+
+keepRunning=True
+while keepRunning:
+    # Run a sudo command to capture the password as soon as the script is run
+    os.system('clear')
+    print(color.YELLOW + "QuiverLocal WordPress Development Environment Tool " + background.END)
+    print(6 * "-" , "OPTIONS" , 6 * "-")
+    print(style.BOLD + "1 " + style.END + "List Sites")
+    print(style.BOLD + "2 " + style.END + "New Install")
+    print(style.BOLD + "3 " + style.END + "Import Site")
+    print(style.BOLD + "4 " + style.END + "Add SSL to Site")
+    print(style.BOLD + "5 " + style.END + "Delete Site")
+    print("")
+    print(style.BOLD + "0 " + style.END + "Exit")
+    print(21 * "-")
+
+    selection = int(input("Enter option [0-5]: "))
+
+    match selection:
+        case 0:
+            print("Goodbye")
+            keepRunning = False
+        case 1:
+            print("Listing Sites")
+            getSiteList(quiverDB)
+        case 2:
+            print("Install New Site")
+        case 3:
+            print("Import Existing Site")
+        case 4:
+            print("Add SSL to Existing Site")
+        case 5:
+            print("Delete Site")
+        case _:
+            print("Unknown Selection")
+
+    input("Hit ENTER to Continue")
+            
