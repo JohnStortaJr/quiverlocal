@@ -4,7 +4,7 @@ from smlib.core import *
 from smlib.format import *
 import json
 
-def getSiteList(localDatabase="./sitedb"):
+def getSiteList(localDatabase = quiverDB):
     keepRunning = True
 
     while keepRunning:
@@ -12,11 +12,15 @@ def getSiteList(localDatabase="./sitedb"):
         menuCounter = 0
         print(6 * "-" , "Installed Sites" , 6 * "-")
 
-        siteList = os.listdir(localDatabase)
+        siteList = sorted(os.listdir(localDatabase))
 
         for i in siteList:
             menuCounter += 1
-            print(style.BOLD + str(menuCounter) + " " + style.END + i)
+
+            if i.endswith(".json"):
+                with open(quiverDB + i, 'r') as inFile:
+                    currentSite = json.load(inFile)
+                    print(style.BOLD + str(menuCounter) + " " + style.END + currentSite["site_name"])
 
         print("")
         print(style.BOLD + "0 " + style.END + "Back")    
@@ -29,36 +33,27 @@ def getSiteList(localDatabase="./sitedb"):
         elif selection == 0:
             return
         
-        readSiteConfig(siteList[selection-1])
+        displaySiteConfig(siteList[selection-1])
         input("Hit ENTER to Continue")
 
 
 
-
-
-
-
-
-
-
-def readSiteConfig(siteName, quiverHome=os.getcwd()):
-    # Open JSON file named site.Name.json in the configdb directory
-    # Read the contents into a dictionary
-    fileName = quiverHome + "/sitedb/" + siteName
-    print(fileName)
-
-    with open(fileName, 'r') as inFile:
+# Open JSON file named siteName.json in the sitedb directory
+# and return a dictionary with the contents
+def readSiteConfig(siteName):
+    with open(quiverDB + siteName, 'r') as inFile:
         activeSite = json.load(inFile)
-
-    # Print the dictionary
-    print(json.dumps(activeSite, indent=4, sort_keys=True))
-    #print(activeSite)
+    
     return activeSite
 
-def writeSiteConfig(siteName, siteDictionary, quiverHome=os.getcwd()):
-    # Open JSON file named siteName.json in the configdb directory
-    # Write the contents of the activeSite dictionary to the file
-    with open(quiverHome + "/sitedb/" + siteName + ".json", 'w') as outFile:
+# Display the contents of the siteName.json file for the indicated site
+def displaySiteConfig(siteName): 
+    print(style.BOLD + "Site details for: " + style.END + siteName)
+    print(json.dumps(readSiteConfig(siteName), indent=4))
+
+# Write the provided dictionary to siteName.json in sitedb (overwriting any existing values)
+def writeSiteConfig(siteDictionary):
+    with open(quiverDB + siteDictionary["site"]["name"] + ".json", 'w') as outFile:
         json.dump(siteDictionary, outFile, indent=4)
         outFile.write("\n")
 

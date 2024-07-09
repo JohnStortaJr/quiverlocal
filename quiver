@@ -5,30 +5,6 @@ from smlib.core import *
 from smlib.info import *
 from smlib.format import *
 
-# Set all variables to their default values
-quiverHome = os.getcwd()
-quiverDB = quiverHome + "/sitedb"
-user = os.path.expanduser('~')
-userHome = os.getenv("HOME")
-certHome = userHome + "/certificates"
-exportHome = userHome + "/exports"
-importFile = exportHome + "/NOFILE"
-importData = exportHome + "/NODATA"
-domainHome = userHome + "/domains"
-domainConfig = domainHome + "/config"
-apacheRoot = "/etc/apache2"
-apacheConf = apacheRoot + "/sites-available"
-apacheLog = "var/log/apache2"
-siteName = "localdev01"
-domainName = siteName + ".local"
-dbName = siteName + "_db"
-dbUser = "wordpress"
-dbPass = "start123"
-certName = "myCert"
-certDuration = 365
-certKeyFile = certHome + "/localcert.key"
-certFile = certHome + "/localcert.crt"
-
 keepRunning=True
 while keepRunning:
     # Run a sudo command to capture the password as soon as the script is run
@@ -51,6 +27,7 @@ while keepRunning:
             print("Goodbye")
             keepRunning = False
         case 1:
+            # Display details about installed sites using the info library
             print("Listing Sites")
             getSiteList(quiverDB)
         case 2:
