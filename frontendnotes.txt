@@ -1,11 +1,4 @@
-THe front end needs to provide a menu of options
-
-Use jq to store the configurations as JSON files. Place each configuration in its own JSON file named for the site. 
-ls the config directory to get the list of configuraitons. Then read each to get details.
-
-Each environment variable is stored in the JSON file for that site
-Additional information is stored such as whether the SSL has been configured and the http and https code and the wp-config values.
-
+The front end needs to provide a menu of options
 
 
 List local instances

@@ -142,11 +142,11 @@ def changeApacheOwnership():
 def configureApache():
     print(style.BOLD + "Configuring the Apache web server" + style.END)
     # This first step is to create the core domain configuration that will be used for all Virtual Hosts
-    runCommand("sed 's|__DOMAINDIR__|" + currentSite["domainHome"] + "|g' " + quiverHome + "/default.core > " + quiverHome + "/tmp/tcoreconf")
+    runCommand("sed 's|__DOMAINDIR__|" + currentSite["domainHome"] + "|g' " + quiverHome + "/base/default.core > " + quiverHome + "/tmp/tcoreconf")
     shutil.copyfile(quiverHome + "/tmp/tcoreconf", currentSite["domainConfig"])
 
     # Next we need to create the Apache configuration files for this site
-    shutil.copyfile(quiverHome + "/default_http.conf", quiverHome + "/tmp/thttpconf")
+    shutil.copyfile(quiverHome + "/base/default_http.conf", quiverHome + "/tmp/thttpconf")
 
     runCommand("sed -i \"s|__DOMAINNAME__|" + currentSite["domainName"] + "|g\" " + quiverHome + "/tmp/thttpconf")
     runCommand("sed -i \"s|__CORECONFIG__|" + currentSite["domainConfig"] + "|g\" " + quiverHome + "/tmp/thttpconf")
@@ -165,7 +165,7 @@ def configureApache():
 
 
 def createDatabase():
-    shutil.copyfile(quiverHome + "/default_dbsetup.sql", quiverHome + "/tmp/tdbconf")
+    shutil.copyfile(quiverHome + "/base/default_dbsetup.sql", quiverHome + "/tmp/tdbconf")
     runCommand("sed -i \"s|__DBNAME__|" + currentSite["dbName"] + "|g\" " + quiverHome + "/tmp/tdbconf")
     runCommand("sed -i \"s|__DBUSER__|" + currentSite["dbUser"] + "|g\" " + quiverHome + "/tmp/tdbconf")
     runCommand("sed -i \"s|__DBPASS__|" + currentSite["dbPass"] + "|g\" " + quiverHome + "/tmp/tdbconf")

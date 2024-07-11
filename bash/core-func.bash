@@ -141,17 +141,20 @@ function createCoreDomainConfig() {
         mkdir $DOMAIN_CONFIG
     fi
 
-    sed "s|__DOMAINDIR__|$DOMAIN_HOME/$DOMAIN_NAME|g" $QUIVER_ROOT/default.core > $QUIVER_ROOT/tmp/tcoreconf
+    sed "s|__DOMAINDIR__|$DOMAIN_HOME/$DOMAIN_NAME|g" $QUIVER_ROOT/../base/default.core > $QUIVER_ROOT/tmp/tcoreconf
 
     cp $QUIVER_ROOT/tmp/tcoreconf $DOMAIN_CONFIG/$SITE_NAME.core
 }
 
 # setup the Apache configuration file for this domain
 function createApacheConfig() {
-    cp $QUIVER_ROOT/default_http.conf $QUIVER_ROOT/tmp/thttpconf
-    cp $QUIVER_ROOT/default_http.conf $QUIVER_ROOT/tmp/thttpconf.bak
-    sed -i "s|__DOMAINDIR__|$DOMAIN_NAME|g" $QUIVER_ROOT/tmp/thttpconf
-    sed -i "s|__CORECONFIG__|$DOMAIN_CONFIG/$SITE_NAME|g" $QUIVER_ROOT/tmp/thttpconf
+
+    echo "Updating Apache Configuration"
+    echo $DOMAIN_NAME
+    cp $QUIVER_ROOT/../base/default_http.conf $QUIVER_ROOT/tmp/thttpconf
+    cp $QUIVER_ROOT/../base/default_http.conf $QUIVER_ROOT/tmp/thttpconf.bak
+    sed -i "s|__DOMAINNAME__|$DOMAIN_NAME|g" $QUIVER_ROOT/tmp/thttpconf
+    sed -i "s|__CORECONFIG__|$DOMAIN_CONFIG/$SITE_NAME.core|g" $QUIVER_ROOT/tmp/thttpconf
     sudo mv $QUIVER_ROOT/tmp/thttpconf $APACHE_CONF/$SITE_NAME.conf
     sudo chown root: $APACHE_CONF/$SITE_NAME.conf
 
@@ -169,10 +172,10 @@ function trustSite() {
     # Should check to make sure there is not already a 443 block in the file
     cp $APACHE_CONF/$SITE_NAME.conf $QUIVER_ROOT/tmp/thttpsconf
 
-    cat $QUIVER_ROOT/default_https.conf >> $QUIVER_ROOT/tmp/thttpsconf
+    cat $QUIVER_ROOT/../base/default_https.conf >> $QUIVER_ROOT/tmp/thttpsconf
 
-    sed -i "s|__DOMAINDIR__|$DOMAIN_NAME|g" $QUIVER_ROOT/tmp/thttpsconf
-    sed -i "s|__CORECONFIG__|$DOMAIN_CONFIG/$SITE_NAME|g" $QUIVER_ROOT/tmp/thttpsconf
+    sed -i "s|__DOMAINNAME__|$DOMAIN_NAME|g" $QUIVER_ROOT/tmp/thttpsconf
+    sed -i "s|__CORECONFIG__|$DOMAIN_CONFIG/$SITE_NAME.core|g" $QUIVER_ROOT/tmp/thttpsconf
     sed -i "s|__CERTFILE__|$CERT_FILE|g" $QUIVER_ROOT/tmp/thttpsconf
     sed -i "s|__CERTKEYFILE__|$CERT_KEY_FILE|g" $QUIVER_ROOT/tmp/thttpsconf
 
@@ -198,7 +201,7 @@ function trustSite() {
 
 ### Setup empty database
 function createEmptyDatabase() {
-    cp $QUIVER_ROOT/default_dbsetup.sql $QUIVER_ROOT/tmp/tdbconf
+    cp $QUIVER_ROOT/../base/default_dbsetup.sql $QUIVER_ROOT/tmp/tdbconf
     sed -i "s|__DBNAME__|$DB_NAME|g" $QUIVER_ROOT/tmp/tdbconf
     sed -i "s|__DBUSER__|$DB_USER|g" $QUIVER_ROOT/tmp/tdbconf
     sed -i "s|__DBPASS__|$DB_PASS|g" $QUIVER_ROOT/tmp/tdbconf
@@ -233,6 +236,7 @@ function createWordPressConfig() {
     sed -i "s|.*'LOGGED_IN_SALT.*|$NEW_LOGGED_IN_SALT|g" $QUIVER_ROOT/tmp/twpconf
     sed -i "s|.*'NONCE_SALT.*|$NEW_NONCE_SALT|g" $QUIVER_ROOT/tmp/twpconf
 
+    #ls -al $DOMAIN_HOME/$DOMAIN_NAME/wp-config.php
     cp $QUIVER_ROOT/tmp/twpconf $DOMAIN_HOME/$DOMAIN_NAME/wp-config.php
 }
 
@@ -273,7 +277,9 @@ function updateWordPressConfig() {
     sed -i "s|.*'NONCE_SALT.*|$NEW_NONCE_SALT|g" $QUIVER_ROOT/tmp/twpconf
 
     cp $QUIVER_ROOT/tmp/twpconf $DOMAIN_HOME/$DOMAIN_NAME/wp-config.php
+}
 
+function updateWordPressURLs() {
     # Get the table prefix
     TABLE_PREFIX=`grep table_prefix ${DOMAIN_HOME}/${DOMAIN_NAME}/wp-config.php | sed -n "s/^.*'\(.*\)'.*$/\1/ p"`
     echo $TABLE_PREFIX

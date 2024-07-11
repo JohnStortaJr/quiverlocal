@@ -7,7 +7,7 @@ QUIVER_ROOT=`dirname "$(realpath $0)"`
 source $QUIVER_ROOT/core-func.bash
 
 # Run a sudo command to capture the password as soon as the script is run
-sudo echo "${bold}QuiverLocal WordPress Development Environment Tool${normal} (install)"
+sudo echo "${bold}QuiverLocal WordPress Development Environment Tool${normal} (import)"
 
 # Define key variables
 initializeVariables
@@ -19,6 +19,8 @@ getDomainName
 getDatabaseName
 getDatabaseUser
 getDatabasePassword
+getImportFile
+getImportData
 
 echo ""
 echo "###########################"
@@ -43,28 +45,27 @@ echo "${bold}Database Name:${normal} $DB_NAME"
 echo "${bold}Database User:${normal} $DB_USER"
 echo "${bold}Database Password:${normal} $DB_PASS"
 
+echo "${bold}Import File:${normal} $IMPORT_FILE"
+echo "${bold}Import Data:${normal} $IMPORT_DATA"
+
 # Confirm that the user wishes to proceed given the provided configuration details
 read -p "Please verify the above configuration. Do you wish to proceed? [y:N]: " userGoNoGo
 goNoGo="${userGoNoGo:='n'}"
 
 # Abort the installation unless the user explicitly enters 'y' or 'Y'
 if [ $goNoGo != "y" ] && [ $goNoGo != "Y" ]; then
-    echo "Aborting installation!"
+    echo "Aborting import!"
     exit 0;
 fi
 
-# Configuration accepted. Proceed with the installation.
+# Configuration accepted. Proceed with the import.
 installRequiredPackages
-installLatestWordpress
+importFiles
 changeApacheUser
 createCoreDomainConfig
 createApacheConfig
 createEmptyDatabase
-
-# Create new wp-config.php file from default template
-cp $DOMAIN_HOME/$DOMAIN_NAME/wp-config-sample.php $QUIVER_ROOT/tmp/twpconf
-
+importData
 updateWordPressConfig
+updateWordPressURLs
 restartApache
-
-# Write JSON to config database
