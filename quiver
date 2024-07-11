@@ -4,11 +4,13 @@ import os
 from smlib.core import *
 from smlib.info import *
 from smlib.format import *
+from smlib.create import *
 
 keepRunning=True
 while keepRunning:
     # Run a sudo command to capture the password as soon as the script is run
-    os.system('clear')
+    #os.system('clear')
+    print("")
     print(color.YELLOW + "QuiverLocal WordPress Development Environment Tool " + background.END)
     print(6 * "-" , "OPTIONS" , 6 * "-")
     print(style.BOLD + "1 " + style.END + "List Sites")
@@ -20,7 +22,7 @@ while keepRunning:
     print(style.BOLD + "0 " + style.END + "Exit")
     print(21 * "-")
 
-    selection = int(input("Enter option [0-5]: "))
+    selection = int(getInput("Enter option [0-5]: ", True))
 
     match selection:
         case 0:
@@ -32,14 +34,17 @@ while keepRunning:
             getSiteList(quiverDB)
         case 2:
             print("Install New Site")
+            createNewSite()
         case 3:
             print("Import Existing Site")
+            importSite()
         case 4:
             print("Add SSL to Existing Site")
         case 5:
             print("Delete Site")
+            deleteSite()
         case _:
-            print("Unknown Selection")
+            print(background.BCYAN + "Unknown selection" + background.END)
 
-    input("Hit ENTER to Continue")
+    #input("Hit ENTER to Continue")
             

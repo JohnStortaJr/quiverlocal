@@ -165,3 +165,37 @@ print(json.dumps(testSite, indent=4))
 #print(json.dumps(activeSite, indent=4, sort_keys=True))
 
 #writeSiteConfig(siteName, activeSite)
+
+currentSite = {
+  "siteName": "dev2.johnstortajr",
+  "domainName": "dev2.johnstortajr.local",
+  "dbName": "dev2_johnstortajr_db",
+  "tablePrefix": "wp_eduxzu",
+  "userName": "jstorta",
+  "userHome": "/home/jstorta",
+  "domainHome": "/home/jstorta/domains/dev2.johnstortajr.local",
+  "domainConfig": "/home/jstorta/domains/config/dev2.johnstortajr.core",
+  "apacheHome": "/etc/apache2",
+  "apacheConfig": "/etc/apache2/sites-available/dev1.johnstortajr.conf",
+  "apacheLog": "/var/log/apache2",
+  "isTrusted": False,
+  "certPath": "/home/jstorta/certificates",
+  "certName": "MyCert",
+  "certDuration": 365,
+  "certKey": "",
+  "certificate": "",
+  "certRequest": "",
+  "certConfig": "",
+  "certRootKey": "",
+  "certRoot": "",
+  "dbUser": "wordpress",
+  "dbPass": "start123",
+  "importPath": "/home/jstorta/exports",
+  "importFile": "/home/jstorta/exports/johnstortajr.tar.gz",
+  "importData": "/home/jstorta/exports/storozon_com.sql.gz"
+}
+
+commandString = "mysql -u root " + currentSite["dbName"] + " -e \"UPDATE " + currentSite["tablePrefix"] + "_options SET option_value = 'http://" + currentSite["domainName"] + "' WHERE option_name = 'site_url';\""
+
+print(commandString)
+#runCommand(commandString, True)
