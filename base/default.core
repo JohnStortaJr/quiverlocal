@@ -1,3 +1,5 @@
+ServerAdmin __SERVERADMIN__
+ServerName __DOMAINNAME__
 DocumentRoot __DOMAINDIR__
 
 <Directory __DOMAINDIR__>

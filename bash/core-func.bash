@@ -23,6 +23,7 @@ function initializeVariables() {
 
     SITE_NAME="localdev01"
     DOMAIN_NAME="${SITE_NAME}.local"
+    SERVER_ADMIN="name@domain.local"
 
     DB_NAME="${SITE_NAME}_db"
     DB_USER=wordpress
@@ -52,6 +53,14 @@ function getDomainName() {
 
     DOMAIN_NAME="`echo ${DOMAIN_NAME} | sed 's|\\/|_|g'`"
     DOMAIN_NAME="`echo ${DOMAIN_NAME} | sed 's|\\\|_|g'`"
+}
+
+function getServerAdmin() {
+    read -p "${bold}Server Admin ${normal}[$SERVER_ADMIN]: " userin_SERVER_ADMIN
+    SERVER_ADMIN="${userin_SERVER_ADMIN:=$SERVER_ADMIN}"
+
+    SERVER_ADMIN="`echo ${SERVER_ADMIN} | sed 's|\\/|_|g'`"
+    SERVER_ADMIN="`echo ${SERVER_ADMIN} | sed 's|\\\|_|g'`"
 }
 
 function getDatabaseName() {
@@ -141,7 +150,9 @@ function createCoreDomainConfig() {
         mkdir $DOMAIN_CONFIG
     fi
 
-    sed "s|__DOMAINDIR__|$DOMAIN_HOME/$DOMAIN_NAME|g" $QUIVER_ROOT/../base/default.core > $QUIVER_ROOT/tmp/tcoreconf
+    sed "s|__SERVERADMIN__|$SERVER_ADMIN|g" $QUIVER_ROOT/../base/default.core > $QUIVER_ROOT/tmp/tcoreconf
+    sed -i "s|__DOMAINNAME__|$DOMAIN_NAME|g" $QUIVER_ROOT/tmp/tcoreconf
+    sed -i "s|__DOMAINDIR__|$DOMAIN_HOME/$DOMAIN_NAME|g" $QUIVER_ROOT/tmp/tcoreconf
 
     cp $QUIVER_ROOT/tmp/tcoreconf $DOMAIN_CONFIG/$SITE_NAME.core
 }
@@ -153,7 +164,6 @@ function createApacheConfig() {
     echo $DOMAIN_NAME
     cp $QUIVER_ROOT/../base/default_http.conf $QUIVER_ROOT/tmp/thttpconf
     cp $QUIVER_ROOT/../base/default_http.conf $QUIVER_ROOT/tmp/thttpconf.bak
-    sed -i "s|__DOMAINNAME__|$DOMAIN_NAME|g" $QUIVER_ROOT/tmp/thttpconf
     sed -i "s|__CORECONFIG__|$DOMAIN_CONFIG/$SITE_NAME.core|g" $QUIVER_ROOT/tmp/thttpconf
     sudo mv $QUIVER_ROOT/tmp/thttpconf $APACHE_CONF/$SITE_NAME.conf
     sudo chown root: $APACHE_CONF/$SITE_NAME.conf
@@ -174,7 +184,6 @@ function trustSite() {
 
     cat $QUIVER_ROOT/../base/default_https.conf >> $QUIVER_ROOT/tmp/thttpsconf
 
-    sed -i "s|__DOMAINNAME__|$DOMAIN_NAME|g" $QUIVER_ROOT/tmp/thttpsconf
     sed -i "s|__CORECONFIG__|$DOMAIN_CONFIG/$SITE_NAME.core|g" $QUIVER_ROOT/tmp/thttpsconf
     sed -i "s|__CERTFILE__|$CERT_FILE|g" $QUIVER_ROOT/tmp/thttpsconf
     sed -i "s|__CERTKEYFILE__|$CERT_KEY_FILE|g" $QUIVER_ROOT/tmp/thttpsconf

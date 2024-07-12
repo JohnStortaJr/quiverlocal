@@ -11,8 +11,9 @@ quiverHome = os.getcwd()
 quiverDB = quiverHome + "/sitedb/"
 
 currentSite = {
-    "siteName": "localdev04",
-    "domainName": "localdev04.local",
+    "siteName": "server99",
+    "domainName": "server99.local",
+    "serverAdmin": "user@localhost",
     "dbName": "localdev04_db",
     "tablePrefix": "wp_",
     "userName": os.environ.get("USER"),
@@ -40,6 +41,7 @@ currentSite = {
     "importData": "NA"
 }
 
+currentSite["serverAdmin"] = currentSite["userName"] + "@" + currentSite["domainName"]
 currentSite["domainRoot"] = currentSite["userHome"] + "/domains"
 currentSite["domainHome"] = currentSite["domainRoot"] + "/" + currentSite["domainName"]
 currentSite["domainConfig"] = currentSite["domainHome"] + "/domains/config/" + currentSite["domainName"] + ".core"

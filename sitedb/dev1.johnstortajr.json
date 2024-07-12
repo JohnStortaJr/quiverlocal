@@ -1,6 +1,7 @@
 {
   "siteName": "dev1.johnstortajr",
   "domainName": "dev1.johnstortajr.local",
+  "serverAdmin": "reach@JohnStortaJr.com",
   "dbName": "dev1_johnstortajr_db",
   "tablePrefix": "wp_",
   "userName": "jstorta",

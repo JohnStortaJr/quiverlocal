@@ -16,6 +16,7 @@ initializeVariables
 echo ""
 getSiteName
 getDomainName
+getServerAdmin
 getDatabaseName
 getDatabaseUser
 getDatabasePassword
@@ -38,6 +39,7 @@ echo "${bold}Apache Log Directory:${normal} $APACHE_LOG"
 echo ""
 echo "${bold}Website Name:${normal} $SITE_NAME"
 echo "${bold}Domain Name:${normal} $DOMAIN_NAME"
+echo "${bold}Server Admin:${normal} $SERVER_ADMIN"
 echo "${bold}WordPress Site Directory:${normal} $DOMAIN_HOME/$DOMAIN_NAME"
 echo "${bold}WordPress Configuration File:${normal} $DOMAIN_HOME/$DOMAIN_NAME/wp-config.php"
 echo ""

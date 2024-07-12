@@ -15,6 +15,7 @@ def createNewSite():
 
     getSiteName()
     getDomainName()
+    getServerAdmin()
     getDatabaseName()
     getDatabaseUser()
     getDatabasePassword()
@@ -32,6 +33,15 @@ def createNewSite():
         restartApache()
         writeSiteConfig(currentSite)
         #print(json.dumps(currentSite, indent=4))
+
+        print("")
+        print(background.BYELLOW + "Site " + currentSite["siteName"] + " has been created." + background.END)
+        print("Make sure that your local " + style.BOLD + "C:\Windows\System32\drivers\etc\hosts" + style.END + " file contains these entries...")
+        print(32 * "-")
+        print("::1 " + currentSite["domainName"])
+        print("127.0.0.1 " + currentSite["domainName"])
+        print(32 * "-")
+        print("Once the host entries are in place, \nyou can access the site using " + color.LWHITE + "http://" + currentSite["domainName"] + color.END + " to complete the WordPress configuration.")
     else:
         print(style.BOLD + "Please make the desired changes and try again." + style.END + style.ITALIC + " (no changes made)" + style.END)
 
@@ -41,13 +51,14 @@ def importSite():
 
     getSiteName()
     getDomainName()
+    getServerAdmin()
     getDatabaseName()
     getDatabaseUser()
     getDatabasePassword()
     getImportFile()
     getImportData()
 
-    if isSiteInfoCorrect():
+    if isSiteInfoCorrect(True):
         print("")
         print(style.BOLD + "Importing site " + currentSite["siteName"] + style.END)
         # Import site
@@ -71,7 +82,7 @@ def importSite():
         print("::1 " + currentSite["domainName"])
         print("127.0.0.1 " + currentSite["domainName"])
         print(32 * "-")
-        print("Once the host entries are in place, you can access the site using " + color.LWHITE + "http://" + currentSite["domainName"] + color.END)
+        print("Once the host entries are in place, \nyou can access the site using " + color.LWHITE + "http://" + currentSite["domainName"] + color.END)
     else:
         print(style.BOLD + "Please make the desired changes and try again." + style.END + style.ITALIC + " (no changes made)" + style.END)
 
@@ -142,13 +153,14 @@ def changeApacheOwnership():
 def configureApache():
     print(style.BOLD + "Configuring the Apache web server" + style.END)
     # This first step is to create the core domain configuration that will be used for all Virtual Hosts
-    runCommand("sed 's|__DOMAINDIR__|" + currentSite["domainHome"] + "|g' " + quiverHome + "/base/default.core > " + quiverHome + "/tmp/tcoreconf")
+    runCommand("sed 's|__SERVERADMIN__|" + currentSite["serverAdmin"] + "|g' " + quiverHome + "/base/default.core > " + quiverHome + "/tmp/tcoreconf")
+    runCommand("sed -i 's|__DOMAINNAME__|" + currentSite["domainName"] + "|g' " + quiverHome + "/tmp/tcoreconf")
+    runCommand("sed -i 's|__DOMAINDIR__|" + currentSite["domainHome"] + "|g' " + quiverHome + "/tmp/tcoreconf")
     shutil.copyfile(quiverHome + "/tmp/tcoreconf", currentSite["domainConfig"])
 
     # Next we need to create the Apache configuration files for this site
     shutil.copyfile(quiverHome + "/base/default_http.conf", quiverHome + "/tmp/thttpconf")
 
-    runCommand("sed -i \"s|__DOMAINNAME__|" + currentSite["domainName"] + "|g\" " + quiverHome + "/tmp/thttpconf")
     runCommand("sed -i \"s|__CORECONFIG__|" + currentSite["domainConfig"] + "|g\" " + quiverHome + "/tmp/thttpconf")
 
     runCommand("mv " + quiverHome + "/tmp/thttpconf " + currentSite["apacheConfig"], True)
@@ -235,9 +247,18 @@ def getDomainName():
 
     # Set related values
     currentSite["domainHome"] = currentSite["userHome"] + "/domains/" + currentSite["domainName"]
+    currentSite["serverAdmin"] = currentSite["userName"] + "@" + currentSite["domainName"]
 
     currentSite["domainName"] = cleanString(currentSite["domainName"])
     #print(currentSite["domainName"])
+
+
+def getServerAdmin():
+    defaultServerAdmin = currentSite["userName"] + "@" + currentSite["domainName"]
+    currentSite["ServerAdmin"] = input(style.BOLD + "Server admin [" + defaultServerAdmin + "]: " + style.END).strip()
+    if not currentSite["ServerAdmin"]: currentSite["ServerAdmin"] = defaultServerAdmin
+
+    #print(currentSite["ServerAdmin"])
 
 
 def getDatabaseName():
@@ -283,7 +304,7 @@ def getImportData():
     #print(currentSite["importData"])
 
 
-def isSiteInfoCorrect():
+def isSiteInfoCorrect(isImport=False):
     print("")
     print(style.UNDERLINE + "Confirm you wish to build a new local site with these details" + style.END)
     print(style.BOLD + "Site name :" + style.END + currentSite["siteName"])
@@ -299,8 +320,9 @@ def isSiteInfoCorrect():
     print(style.BOLD + "Apache Config :" + style.END + currentSite["apacheConfig"])
     print(style.BOLD + "Apache Logs :" + style.END + currentSite["apacheLog"])
 
-    print(style.BOLD + "Import File :" + style.END + currentSite["importFile"])
-    print(style.BOLD + "Import Data :" + style.END + currentSite["importData"])
+    if isImport:
+        print(style.BOLD + "Import File :" + style.END + currentSite["importFile"])
+        print(style.BOLD + "Import Data :" + style.END + currentSite["importData"])
 
     confirmation = input(style.BOLD + "Proceed [y/N]? " + style.END).strip()
     
