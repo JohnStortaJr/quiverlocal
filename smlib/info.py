@@ -15,6 +15,7 @@ def getSiteList(localDatabase = quiverDB):
 
         siteFileList = sorted(os.listdir(localDatabase))
         siteList = []
+        trustedList = []
 
         for i in siteFileList:
             menuCounter += 1
@@ -23,22 +24,53 @@ def getSiteList(localDatabase = quiverDB):
                 with open(quiverDB + i, 'r') as inFile:
                     currentSite = json.load(inFile)
                     siteList.append(currentSite["siteName"])
-                    print(style.BOLD + str(menuCounter) + " " + style.END + currentSite["siteName"])
+                    trustedList.append(currentSite["isTrusted"])
+                    if currentSite["isTrusted"]:
+                        trustMark = " ♥"
+                    else:
+                        trustMark = ""
+
+                    print(style.NEGATIVE + str(menuCounter) + style.END + " " + currentSite["siteName"] + color.BBLUE + trustMark + style.END)
 
         print("")
-        print(style.BOLD + "0 " + style.END + "Back")    
+        print(style.NEGATIVE + "0" + style.END + " Back")    
         print(21 * "-")
 
         selection = int(getInput("Which site details do you wish to see [0-" + str(menuCounter) + "]? ", True))
 
         if selection > len(siteList):
-            print(background.BCYAN + "Unknown selection" + background.END)
+            print(background.BYELLOW + "Unknown selection" + background.END)
             continue
         elif selection == 0:
             return
         
         displaySiteConfig(siteList[selection-1])
         input("Hit ENTER to Continue")
+
+
+def getTablePrefixes():
+
+    print("")
+    menuCounter = 0
+    print(6 * "-" , "Installed Sites" , 6 * "-")
+
+    siteFileList = sorted(os.listdir(quiverDB))
+    siteList = []
+
+    for i in siteFileList:
+        menuCounter += 1
+
+        if i.endswith(".json"):
+            with open(quiverDB + i, 'r') as inFile:
+                foundSite = json.load(inFile)
+                siteList.append(foundSite)
+                tablePrefix = runCommand("awk '/table_prefix/{print $3}' " + foundSite["domainHome"] + "/wp-config.php")[1:-3]
+                print(foundSite["siteName"] + ">> " + tablePrefix)
+
+
+def updateTablePrefix(targetSite):
+    targetSite["tablePrefix"] = runCommand("awk '/table_prefix/{print $3}' " + targetSite["domainHome"] + "/wp-config.php")[1:-3]
+    writeSiteConfig(targetSite)
 
 
 
@@ -58,29 +90,3 @@ def writeSiteConfig(siteDictionary):
     with open(quiverDB + siteDictionary["siteName"] + ".json", 'w') as outFile:
         json.dump(siteDictionary, outFile, indent=4)
         outFile.write("\n")
-
-
-def deleteSite():
-    #### Add warnings and prompts before deleting
-    targetSite = readSiteConfig(getInput("Which site do you wish to delete ? "))
-
-    print(json.dumps(targetSite, indent=4))
-
-    # disable the site in apache
-    runCommand("a2dissite " + targetSite["siteName"], True)
-
-    # restart apache
-    restartApache()
-
-    # Delete the apache config files
-    runCommand("rm " + targetSite["domainConfig"])
-    runCommand("rm " + targetSite["apacheConfig"], True)
-
-    # Delete the domain directory
-    runCommand("rm -rf " + targetSite["domainHome"])
-
-    # drop the database
-    runCommand("mysql -u root -e 'DROP DATABASE " + targetSite["dbName"] + ";'", True)
-
-    # delete the config json file
-    runCommand("rm " + quiverHome + "/sitedb/" + targetSite["siteName"] + ".json")

@@ -5,21 +5,23 @@ from smlib.core import *
 from smlib.info import *
 from smlib.format import *
 from smlib.create import *
+from smlib.trust import *
+from smlib.delete import *
 
 keepRunning=True
 while keepRunning:
     # Run a sudo command to capture the password as soon as the script is run
     #os.system('clear')
     print("")
-    print(color.YELLOW + "QuiverLocal WordPress Development Environment Tool " + background.END)
+    print(color.BBLUE + "QuiverLocal WordPress Development Environment Tool " + background.END)
     print(6 * "-" , "OPTIONS" , 6 * "-")
-    print(style.BOLD + "1 " + style.END + "List Sites")
-    print(style.BOLD + "2 " + style.END + "New Install")
-    print(style.BOLD + "3 " + style.END + "Import Site")
-    print(style.BOLD + "4 " + style.END + "Add SSL to Site")
-    print(style.BOLD + "5 " + style.END + "Delete Site")
+    print(style.NEGATIVE + "1" + style.END + " List Sites")
+    print(style.NEGATIVE + "2" + style.END + " New Install")
+    print(style.NEGATIVE + "3" + style.END + " Import Site")
+    print(style.NEGATIVE + "4" + style.END + " Add SSL to Site")
+    print(style.NEGATIVE + "5" + style.END + " Delete Site")
     print("")
-    print(style.BOLD + "0 " + style.END + "Exit")
+    print(style.NEGATIVE + "0" + style.END + " Exit")
     print(21 * "-")
 
     selection = int(getInput("Enter option [0-5]: ", True))
@@ -40,11 +42,14 @@ while keepRunning:
             importSite()
         case 4:
             print("Add SSL to Existing Site")
+            trustSite()
         case 5:
             print("Delete Site")
             deleteSite()
+        case 6:
+            getTablePrefixes()
         case _:
-            print(background.BCYAN + "Unknown selection" + background.END)
+            print(background.BYELLOW + "Unknown selection" + background.END)
 
     #input("Hit ENTER to Continue")
             

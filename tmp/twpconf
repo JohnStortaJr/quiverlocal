@@ -16,8 +16,8 @@
 
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define('WP_CACHE', false);
-define( 'DB_NAME', 'dev3_localdev_db' );
+define('WP_CACHE', true);
+define( 'DB_NAME', 'dev3_oldegreybeardstavern_db' );
 
 /** MySQL database username */
 define( 'DB_USER', 'wordpress' );
@@ -43,14 +43,14 @@ define('DB_COLLATE', '');
  *
  * @since 2.6.0
  */
-define( 'AUTH_KEY',         '6ad90d2cc67d47f5b416878a1f5302bf882a78871d0133f6f0be3c3588c2406e' );
-define( 'SECURE_AUTH_KEY',  '4355e42bb334a3808bd43c22705833eda81c2e1172e51e23beff3ef193e2eb39' );
-define( 'LOGGED_IN_KEY',    'bf43f8af6b16d3c40b78ad1d438e94746ff71aabeb035a33592d3dceff1e8fa3' );
-define( 'NONCE_KEY',        '84a8c5d33f7f631e7cf33fa1bf26d5f1fbd7ba2033b6123d35414f27963e74aa' );
-define( 'AUTH_SALT',        '67c4b80f479f7d0f8ec967a03387da62ddee4e8e89778da1176cf2d12ac3255d' );
-define( 'SECURE_AUTH_SALT', 'fe1683eeb75721574e6b356b9f8a26109beabf63f5da3c383e0c5813174a89a5' );
-define( 'LOGGED_IN_SALT',   '57b8d37e4197fab9708472483c3741a0748e59c76cd41765b4e5c82c3f4d0312' );
-define( 'NONCE_SALT',       '4463a8663af048d8dd8f48c9eb47e996ab79336b485d76aaee95a9fd05fd5f18' );
+define( 'AUTH_KEY',         '70387977aea03696a2beeb98e6e1222cb40789da9e39145d4753f49dd357ce9a' );
+define( 'SECURE_AUTH_KEY',  '96adcdcd668be3cdd2d2b1de8dd6c44ea922891e169eafdcbe086c647e5ab60c' );
+define( 'LOGGED_IN_KEY',    '004d02c23b9e76dd2e2b23774558c52926991999fc6365dbbe48cccf6d15ebf5' );
+define( 'NONCE_KEY',        '7a43618aba1c79ccbe094cdfa6e0b7e96cf66340cc8c9096a3e9bdc65423cdb1' );
+define( 'AUTH_SALT',        '6b6a7085a509a9a70bd1b79c7aedab1c6716e875bc4dfd8a466e0da1d0ba8406' );
+define( 'SECURE_AUTH_SALT', 'f9d4ec7aaaadec31f3ed6e9b60a1350a6eaf239086a229087b67d07ef442b571' );
+define( 'LOGGED_IN_SALT',   '2e2259277edd870f7bd70484f668373635b10c53e15d27324fa65f3e4d3f4c30' );
+define( 'NONCE_SALT',       'e344a46e6fd3e4d73a2c1665dc562ccfabcecb37fd795e7ac38712bb7027902d' );
 
 /**#@-*/
 
@@ -60,7 +60,7 @@ define( 'NONCE_SALT',       '4463a8663af048d8dd8f48c9eb47e996ab79336b485d76aaee9
  * You can have multiple installations in one database if you give each a unique
  * prefix. Only numbers, letters, and underscores please!
  */
-$table_prefix  = 'wp_eduxzu_';
+$table_prefix  = 'wp_ysav6i_';
 
 /**
  * Limits total Post Revisions saved per Post/Page.
@@ -95,6 +95,7 @@ if (isset($_SERVER['HTTP_HOST']) && preg_match("/^(.*)\.dream\.website$/", $_SER
         $proto = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
         define('WP_SITEURL', $proto . '://' . $_SERVER['HTTP_HOST']);
         define('WP_HOME',    $proto . '://' . $_SERVER['HTTP_HOST']);
+        define('JETPACK_STAGING_MODE', true);
 }
 
 /* That's all, stop editing! Happy blogging. */
@@ -105,4 +106,3 @@ if ( !defined('ABSPATH') )
 
 /** Sets up WordPress vars and included files. */
 require_once(ABSPATH . 'wp-settings.php');
-

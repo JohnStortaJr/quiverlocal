@@ -5,6 +5,7 @@ import json
 import os
 import subprocess
 import random
+from smlib.format import *
 
 quiverHome = os.getcwd()
 userHome = "/home/jstorta"
@@ -195,7 +196,53 @@ currentSite = {
   "importData": "/home/jstorta/exports/storozon_com.sql.gz"
 }
 
-commandString = "mysql -u root " + currentSite["dbName"] + " -e \"UPDATE " + currentSite["tablePrefix"] + "_options SET option_value = 'http://" + currentSite["domainName"] + "' WHERE option_name = 'site_url';\""
+#commandString = "mysql -u root " + currentSite["dbName"] + " -e \"UPDATE " + currentSite["tablePrefix"] + "_options SET option_value = 'http://" + currentSite["domainName"] + "' WHERE option_name = 'site_url';\""
 
-print(commandString)
+#print(commandString)
 #runCommand(commandString, True)
+
+print(color.BLACK + "This is a color test string " + color.END + " >> BLACK")
+print(color.RED + "This is a color test string " + color.END + " >> RED")
+print(color.GREEN + "This is a color test string " + color.END + " >> GREEN")
+print(color.YELLOW + "This is a color test string " + color.END + " >> YELLOW")
+print(color.BLUE + "This is a color test string " + color.END + " >> BLUE")
+print(color.MAGENTA + "This is a color test string " + color.END + " >> MAGENTA")
+print(color.CYAN + "This is a color test string " + color.END + " >> CYAN")
+print(color.WHITE + "This is a color test string " + color.END + " >> WHITE")
+print("")
+print(color.BBLACK + "This is a color test string " + color.END + " >> BBLACK")
+print(color.BRED + "This is a color test string " + color.END + " >> BRED")
+print(color.BGREEN + "This is a color test string " + color.END + " >> BGREEN")
+print(color.BYELLOW + "This is a color test string " + color.END + " >> BYELLOW")
+print(color.BBLUE + "This is a color test string " + color.END + " >> BBLUE")
+print(color.BMAGENTA + "This is a color test string " + color.END + " >> BMAGENTA")
+print(color.BCYAN + "This is a color test string " + color.END + " >> BCYAN")
+print(color.BWHITE + "This is a color test string " + color.END + " >> BWHITE")
+
+print("")
+print(background.BLACK + "This is a background color test string " + background.END + " >> BLACK")
+print(background.RED + "This is a background color test string " + background.END + " >> RED")
+print(background.GREEN + "This is a background color test string " + background.END + " >> GREEN")
+print(background.YELLOW + "This is a background color test string " + background.END + " >> YELLOW")
+print(background.BLUE + "This is a background color test string " + background.END + " >> BLUE")
+print(background.MAGENTA + "This is a background color test string " + background.END + " >> MAGENTA")
+print(background.CYAN + "This is a background color test string " + background.END + " >> CYAN")
+print(background.WHITE + "This is a background color test string " + background.END + " >> WHITE")
+print("")
+print(background.BBLACK + "This is a background color test string " + background.END + " >> BBLACK")
+print(background.BRED + "This is a background color test string " + background.END + " >> BRED")
+print(background.BGREEN + "This is a background color test string " + background.END + " >> BGREEN")
+print(background.BYELLOW + "This is a background color test string " + background.END + " >> BYELLOW")
+print(background.BBLUE + "This is a background color test string " + background.END + " >> BBLUE")
+print(background.BMAGENTA + "This is a background color test string " + background.END + " >> BMAGENTA")
+print(background.BCYAN + "This is a background color test string " + background.END + " >> BCYAN")
+print(background.BWHITE + "This is a background color test string " + background.END + " >> BWHITE")
+
+print("")
+print(style.BOLD + "This is a style test string " + style.END + " >> BOLD")
+print(style.FAINT + "This is a style test string " + style.END + " >> FAINT")
+print(style.ITALIC + "This is a style test string " + style.END + " >> ITALIC")
+print(style.UNDERLINE + "This is a style test string " + style.END + " >> UNDERLINE")
+print(style.BLINK + "This is a style test string " + style.END + " >> BLINK")
+print(style.NEGATIVE + "This is a style test string " + style.END + " >> NEGATIVE")
+print(style.CROSSED + "This is a style test string " + style.END + " >> CROSSED")

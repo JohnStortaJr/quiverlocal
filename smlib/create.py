@@ -11,7 +11,7 @@ import secrets
 def createNewSite():
     #os.system('clear')
     print("")
-    print(color.YELLOW + "This will create a new local site using the information you provide " + background.END)
+    print(color.BBLUE + "This will create a new local site using the information you provide " + color.END)
 
     getSiteName()
     getDomainName()
@@ -30,24 +30,27 @@ def createNewSite():
         configureApache()
         createDatabase()
         configureWordPressDatabaseConnection()
+        getTablePrefix()
         restartApache()
         writeSiteConfig(currentSite)
         #print(json.dumps(currentSite, indent=4))
 
         print("")
-        print(background.BYELLOW + "Site " + currentSite["siteName"] + " has been created." + background.END)
+        print(background.BCYAN + "Site " + currentSite["siteName"] + " has been created." + background.END)
         print("Make sure that your local " + style.BOLD + "C:\Windows\System32\drivers\etc\hosts" + style.END + " file contains these entries...")
         print(32 * "-")
         print("::1 " + currentSite["domainName"])
         print("127.0.0.1 " + currentSite["domainName"])
         print(32 * "-")
-        print("Once the host entries are in place, \nyou can access the site using " + color.LWHITE + "http://" + currentSite["domainName"] + color.END + " to complete the WordPress configuration.")
+        print("Once the host entries are in place, \nyou can access the site using " + style.BOLD + "http://" + currentSite["domainName"] + style.END + " to complete the WordPress configuration.")
+        print(style.ITALIC + "Be sure to complete the WordPress configuration BEFORE doing anything else with this site." + style.END)
     else:
-        print(style.BOLD + "Please make the desired changes and try again." + style.END + style.ITALIC + " (no changes made)" + style.END)
+        print("")
+        print("Please make the desired changes and try again." + style.ITALIC + " (no changes made)" + style.END)
 
 def importSite():
     print("")
-    print(color.YELLOW + "This will create a new local site using the information you provide " + background.END)
+    print(color.BBLUE + "This will create a new local site using the information you provide " + color.END)
 
     getSiteName()
     getDomainName()
@@ -70,21 +73,21 @@ def importSite():
         configureWordPressDatabaseConnection()
         getTablePrefix()
         importData()
-        updateSiteValues()
+        updateSiteValues(currentSite)
         restartApache()
         writeSiteConfig(currentSite)
         #print(json.dumps(currentSite, indent=4))
 
         print("")
-        print(background.BYELLOW + "Site " + currentSite["siteName"] + " has been imported." + background.END)
+        print(background.BCYAN + "Site " + currentSite["siteName"] + " has been imported." + background.END)
         print("Make sure that your local " + style.BOLD + "C:\Windows\System32\drivers\etc\hosts" + style.END + " file contains these entries...")
         print(32 * "-")
         print("::1 " + currentSite["domainName"])
         print("127.0.0.1 " + currentSite["domainName"])
         print(32 * "-")
-        print("Once the host entries are in place, \nyou can access the site using " + color.LWHITE + "http://" + currentSite["domainName"] + color.END)
+        print("Once the host entries are in place, \nyou can access the site using " + style.BOLD + "http://" + currentSite["domainName"] + style.END)
     else:
-        print(style.BOLD + "Please make the desired changes and try again." + style.END + style.ITALIC + " (no changes made)" + style.END)
+        print("Please make the desired changes and try again." + style.ITALIC + " (no changes made)" + style.END)
 
 
 ### Download and extract the latest WordPress version
@@ -120,14 +123,14 @@ def importData():
 
 
 
-def updateSiteValues():
+def updateSiteValues(targetSite, protocol="http"):
     print(style.BOLD + "Updating local site URLs" + style.END)
     # Need to change the siteurl and home values
-    commandString = "mysql -u root " + currentSite["dbName"] + " -e \"UPDATE " + currentSite["tablePrefix"] + "_options SET option_value = 'http://" + currentSite["domainName"] + "' WHERE option_name = 'siteurl';\""
+    commandString = "mysql -u root " + targetSite["dbName"] + " -e \"UPDATE " + targetSite["tablePrefix"] + "_options SET option_value = '" + protocol + "://" + targetSite["domainName"] + "' WHERE option_name = 'siteurl';\""
     #print(commandString)
     runCommand(commandString, True)
 
-    commandString = "mysql -u root " + currentSite["dbName"] + " -e \"UPDATE " + currentSite["tablePrefix"] + "_options SET option_value = 'http://" + currentSite["domainName"] + "' WHERE option_name = 'home';\""
+    commandString = "mysql -u root " + targetSite["dbName"] + " -e \"UPDATE " + targetSite["tablePrefix"] + "_options SET option_value = '" + protocol + "://" + targetSite["domainName"] + "' WHERE option_name = 'home';\""
     #print(commandString)
     runCommand(commandString, True)
 
@@ -255,10 +258,10 @@ def getDomainName():
 
 def getServerAdmin():
     defaultServerAdmin = currentSite["userName"] + "@" + currentSite["domainName"]
-    currentSite["ServerAdmin"] = input(style.BOLD + "Server admin [" + defaultServerAdmin + "]: " + style.END).strip()
-    if not currentSite["ServerAdmin"]: currentSite["ServerAdmin"] = defaultServerAdmin
+    currentSite["serverAdmin"] = input(style.BOLD + "Server admin [" + defaultServerAdmin + "]: " + style.END).strip()
+    if not currentSite["serverAdmin"]: currentSite["serverAdmin"] = defaultServerAdmin
 
-    #print(currentSite["ServerAdmin"])
+    #print(currentSite["serverAdmin"])
 
 
 def getDatabaseName():
@@ -307,22 +310,23 @@ def getImportData():
 def isSiteInfoCorrect(isImport=False):
     print("")
     print(style.UNDERLINE + "Confirm you wish to build a new local site with these details" + style.END)
-    print(style.BOLD + "Site name :" + style.END + currentSite["siteName"])
-    print(style.BOLD + "Domain name :" + style.END + currentSite["domainName"])
-    print(style.BOLD + "Database Name :" + style.END + currentSite["dbName"])
-    print(style.BOLD + "Database Username :" + style.END + currentSite["dbUser"])
-    print(style.BOLD + "Database Password :" + style.END + currentSite["dbPass"])
+    print(style.BOLD + "Site name: " + style.END + currentSite["siteName"])
+    print(style.BOLD + "Domain name: " + style.END + currentSite["domainName"])
+    print(style.BOLD + "Server admin: " + style.END + currentSite["serverAdmin"])
+    print(style.BOLD + "Database Name: " + style.END + currentSite["dbName"])
+    print(style.BOLD + "Database Username: " + style.END + currentSite["dbUser"])
+    print(style.BOLD + "Database Password: " + style.END + currentSite["dbPass"])
     print("")
     print(style.ITALIC + "** Fixed Values **" + style.END)
-    print(style.BOLD + "Domain Home :" + style.END + currentSite["domainHome"])
-    print(style.BOLD + "Domain Config :" + style.END + currentSite["domainConfig"])
-    print(style.BOLD + "Apache Home :" + style.END + currentSite["apacheHome"])
-    print(style.BOLD + "Apache Config :" + style.END + currentSite["apacheConfig"])
-    print(style.BOLD + "Apache Logs :" + style.END + currentSite["apacheLog"])
+    print(style.BOLD + "Domain Home: " + style.END + currentSite["domainHome"])
+    print(style.BOLD + "Domain Config: " + style.END + currentSite["domainConfig"])
+    print(style.BOLD + "Apache Home: " + style.END + currentSite["apacheHome"])
+    print(style.BOLD + "Apache Config: " + style.END + currentSite["apacheConfig"])
+    print(style.BOLD + "Apache Logs: " + style.END + currentSite["apacheLog"])
 
     if isImport:
-        print(style.BOLD + "Import File :" + style.END + currentSite["importFile"])
-        print(style.BOLD + "Import Data :" + style.END + currentSite["importData"])
+        print(style.BOLD + "Import File: " + style.END + currentSite["importFile"])
+        print(style.BOLD + "Import Data: " + style.END + currentSite["importData"])
 
     confirmation = input(style.BOLD + "Proceed [y/N]? " + style.END).strip()
     

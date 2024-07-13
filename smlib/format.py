@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 class color:
-   BLACK = "\033[0;30m"
+   BLACK = "\033[0;30m"    # If the terminal background is black, then the text will be unreadable
    RED = "\033[0;31m"
    GREEN = "\033[0;32m"
    YELLOW = "\033[0;33m"
@@ -10,14 +10,17 @@ class color:
    CYAN = "\033[0;36m"
    WHITE = "\033[0;37m"
 
-   LBLACK = "\033[1;30m"
-   LRED = "\033[1;31m"
-   LGREEN = "\033[1;32m"
-   LYELLOW = "\033[1;33m"
-   LBLUE = "\033[1;34m"
-   LMAGENTA = "\033[1;35m"
-   LCYAN = "\033[1;36m"
-   LWHITE = "\033[1;37m"
+   # These are the same colors as above, but the text is also BOLD and more readable
+   BBLACK = "\033[1;30m"   # Unlike above, this text is more of a dark gray and still reable
+   BRED = "\033[1;31m"
+   BGREEN = "\033[1;32m"
+   BYELLOW = "\033[1;33m"
+   BBLUE = "\033[1;34m"
+   BMAGENTA = "\033[1;35m"
+   BCYAN = "\033[1;36m"
+
+   # White on light gray makes this almost unreadable
+   BWHITE = "\033[1;37m"
 
    END = "\033[0m"
 
@@ -28,6 +31,8 @@ class style:
    ITALIC = "\033[3m"
    UNDERLINE = "\033[4m"
    BLINK = "\033[5m"
+
+   # This give black text on a white background
    NEGATIVE = "\033[7m"
    CROSSED = "\033[9m"
 
@@ -41,8 +46,9 @@ class background:
    BLUE = "\u001b[44m"
    MAGENTA = "\u001b[45m"
    CYAN = "\u001b[46m"
-   WHITE = "\u001b[47m"
-   
+   WHITE = "\u001b[47m"    # This makes white text on a white background which completely obscures the text
+
+   # These are the same background colors as above, but the text is BOLD
    BBLACK = "\u001b[40;1m"
    BRED = "\u001b[41;1m"
    BGREEN = "\u001b[42;1m"
@@ -50,6 +56,6 @@ class background:
    BBLUE = "\u001b[44;1m"
    BMAGENTA = "\u001b[45;1m"
    BCYAN = "\u001b[46;1m"
-   BWHITE = "\u001b[47;1m"
+   BWHITE = "\u001b[47;1m"    # This text would be barely readable
 
    END = "\u001b[0m"
