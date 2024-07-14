@@ -10,11 +10,11 @@ from smlib.format import *
 quiverHome = os.getcwd()
 quiverDB = quiverHome + "/sitedb/"
 
-currentSite = {
-    "siteName": "server99",
-    "domainName": "server99.local",
+siteTemplate = {
+    "siteName": "site99",
+    "domainName": "site99.local",
     "serverAdmin": "user@localhost",
-    "dbName": "localdev04_db",
+    "dbName": "site99_db",
     "tablePrefix": "wp_",
     "userName": os.environ.get("USER"),
     "userHome": os.environ.get("HOME"),
@@ -26,7 +26,7 @@ currentSite = {
     "apacheLog": "/var/log/apache2",
     "isTrusted": False,
     "certPath": "",
-    "certName": "MyCert",
+    "certName": "",
     "certDuration": 365,
     "certKey": "",
     "certificate": "",
@@ -41,23 +41,30 @@ currentSite = {
     "importData": "NA"
 }
 
-currentSite["serverAdmin"] = currentSite["userName"] + "@" + currentSite["domainName"]
-currentSite["domainRoot"] = currentSite["userHome"] + "/domains"
-currentSite["domainHome"] = currentSite["domainRoot"] + "/" + currentSite["domainName"]
-currentSite["domainConfig"] = currentSite["domainHome"] + "/domains/config/" + currentSite["domainName"] + ".core"
-currentSite["apacheConfig"] = currentSite["apacheHome"] + "/sites-available/" + currentSite["domainName"] + ".conf"
-currentSite["importPath"] = currentSite["userHome"] + "/exports"
+siteTemplate["serverAdmin"] = siteTemplate["userName"] + "@" + siteTemplate["domainName"]
+siteTemplate["domainRoot"] = siteTemplate["userHome"] + "/domains"
+siteTemplate["domainHome"] = siteTemplate["domainRoot"] + "/" + siteTemplate["domainName"]
+siteTemplate["domainConfig"] = siteTemplate["domainHome"] + "/domains/config/" + siteTemplate["domainName"] + ".core"
+siteTemplate["apacheConfig"] = siteTemplate["apacheHome"] + "/sites-available/" + siteTemplate["domainName"] + ".conf"
+siteTemplate["importPath"] = siteTemplate["userHome"] + "/exports"
 
-def cleanString(dirtyString, cleanPeriods=False):
-    badChars = [';', ':', '!', "*", "\\", "/", ",", " "]
+# Cleans troublesome characters from a string
+# There is a default list of characters, but a custom list can be provided
+# You can specify if the custom list should be used instead of the defaults or appended to that list
+# The default list includes most special characters with the exception of '.' and '@'
+def cleanString(targetString, customChars=[" "], append=True):
+    defaultChars = ["!", "#", "$", "%", "^", "&", "*", "(", ")", "=", "+", "{", "}", "[", "]", "|", "\\", ";", ":", "'", "\"", "/", "?", ",", "<", ">", "`", "~"]
 
-    if cleanPeriods: badChars.append(".")
+    if append: badChars = defaultChars + customChars
+    else: badChars = customChars
 
     for i in badChars:
-        dirtyString = dirtyString.replace(i, '_')
+        targetString = targetString.replace(i, '_')
     
-    return dirtyString
+    return targetString
 
+
+# Prompt for input and return the value. Require an Int if desired.
 def getInput(promptString, requireInt=False):
     enteredValue = input(promptString).strip()
 
@@ -69,10 +76,11 @@ def getInput(promptString, requireInt=False):
     return enteredValue
 
 
+# Build a temporary bash script to run a linux command
+# For use in cases where there is not a clean python-native way to perform a task
 def runCommand(commandString="whoami", asRoot=False):
     localPID = random.randint(111111, 999999)
     tempScriptName = quiverHome + "/tmp/" + "tScript" + str(localPID)
-    #print(tempScriptName + "-" + commandString)
 
     # Create script file and write commands to be executed
     with open(tempScriptName, "a") as outFile:
@@ -84,17 +92,17 @@ def runCommand(commandString="whoami", asRoot=False):
 
     # Run the script and display the output (end='' removes the blank line at the end)
     if asRoot:
-        #print("Running as ROOT")
         tempScriptResult = subprocess.run(["sudo", tempScriptName], capture_output=True, text=True)
     else:
-        #print("Running as User")
         tempScriptResult = subprocess.run([tempScriptName], capture_output=True, text=True)
 
     # Delete the temporary script
-    
     subprocess.run(["rm", tempScriptName], capture_output=True, text=True)
+
+    # If stderr contains anything, print it immediately
     if tempScriptResult.stderr.strip(): print("e:" + tempScriptResult.stderr)
 
+    # Return the stdout from the execution
     return tempScriptResult.stdout.strip()
 
 

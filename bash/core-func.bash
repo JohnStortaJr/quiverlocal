@@ -47,6 +47,7 @@ function getSiteName() {
     DB_NAME="`echo ${SITE_NAME} | sed 's|\.|_|g'`_db"
 }
 
+
 function getDomainName() {
     read -p "${bold}Domain Name ${normal}[$DOMAIN_NAME]: " userin_DOMAIN_NAME
     DOMAIN_NAME="${userin_DOMAIN_NAME:=$DOMAIN_NAME}"

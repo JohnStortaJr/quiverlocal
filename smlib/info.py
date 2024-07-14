@@ -73,20 +73,41 @@ def updateTablePrefix(targetSite):
     writeSiteConfig(targetSite)
 
 
+def isUnique(key, value):
+    # Get list of config files
+    siteFileList = sorted(os.listdir(quiverDB))
 
-# Open JSON file named siteName.json in the sitedb directory
-# and return a dictionary with the contents
+    # Open each config file (end with json)
+    for i in siteFileList:
+
+        if i.endswith(".json"):
+
+            with open(quiverDB + i, 'r') as inFile:
+                existingSite = json.load(inFile)
+
+                # If the existing config for the given key matches the provided value, then this entry is a duplicate
+                if existingSite[key] == value:
+                    return False
+    
+    return True
+
+
+### Open JSON file named siteName.json in the sitedb directory
+### and return a dictionary with the contents
 def readSiteConfig(siteName):
     with open(quiverDB + siteName + ".json", 'r') as inFile:
         return json.load(inFile)
 
-# Display the contents of the siteName.json file for the indicated site
+
+### Display the contents of the siteName.json file for the indicated site
 def displaySiteConfig(siteName): 
     print(style.BOLD + "Site details for: " + style.END + siteName)
     print(json.dumps(readSiteConfig(siteName), indent=4))
 
-# Write the provided dictionary to siteName.json in sitedb (overwriting any existing values)
+
+### Write the provided dictionary to siteName.json in sitedb (overwriting any existing values)
 def writeSiteConfig(siteDictionary):
+    print(json.dumps(siteDictionary, indent=4))
     with open(quiverDB + siteDictionary["siteName"] + ".json", 'w') as outFile:
         json.dump(siteDictionary, outFile, indent=4)
         outFile.write("\n")

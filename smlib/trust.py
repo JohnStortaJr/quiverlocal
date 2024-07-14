@@ -51,28 +51,29 @@ def trustSite(localDatabase = quiverDB):
 
             if (confirmation != "y") and (confirmation != "Y"): continue
 
-        print(json.dumps(siteList[selection-1], indent=4))
+        siteToTrust = siteList[selection-1].copy()
+        #print(json.dumps(siteToTrust, indent=4))
         print("This will add an existing SSL certificate to the site. The signed certificates must already exist.")
 
         # Get the paths to the certificate files from the user
-        getCertificate(siteList[selection-1])
+        siteToTrust = getCertificate(siteToTrust)
 
         # Add the certificate paths to the Apache configuration
-        addCertificate(siteList[selection-1])
+        addCertificate(siteToTrust)
 
         # Update the WordPress database to reflect the https URLs
-        updateSiteValues(siteList[selection-1], "https")
+        updateSiteValues(siteToTrust, "https")
 
         restartApache()
 
         # Mark this site as trusted and write the dictionary to the quiver database
-        siteList[selection-1]["isTrusted"] = True
-        writeSiteConfig(siteList[selection-1])
+        siteToTrust["isTrusted"] = True
+        writeSiteConfig(siteToTrust)
 
         print("")
-        print(style.BOLD + siteList[selection-1]["siteName"] + style.END + " is now trusted " + style.END)
+        print(style.BOLD + siteToTrust["siteName"] + style.END + " is now trusted " + style.END)
         print("Once the corresponding CA ROOT certificate is added to the local system, ")
-        print("the site can be accessed using https://" + siteList[selection-1]["domainName"] + style.END)
+        print("the site can be accessed using https://" + siteToTrust["domainName"] + style.END)
 
 
 
@@ -98,6 +99,7 @@ def getCertificate(targetSite):
     writeSiteConfig(targetSite)
     #print(currentSite["importFile"])
 
+    return targetSite
 
 
 def addCertificate(targetSite):

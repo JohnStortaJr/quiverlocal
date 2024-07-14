@@ -1,15 +1,15 @@
-ServerAdmin reach@johnstortajr.com
-ServerName dev3.oldegreybeardstavern.local
-DocumentRoot /home/jstorta/domains/dev3.oldegreybeardstavern.local
+ServerAdmin jstorta@dev8.localdev.local
+ServerName dev8.localdev.local
+DocumentRoot /home/jstorta/domains/dev8.localdev.local
 
-<Directory /home/jstorta/domains/dev3.oldegreybeardstavern.local>
+<Directory /home/jstorta/domains/dev8.localdev.local>
     Options FollowSymLinks
     AllowOverride Limit Options FileInfo
     DirectoryIndex index.php
     Require all granted
 </Directory>
 
-<Directory /home/jstorta/domains/dev3.oldegreybeardstavern.local/wp-content>
+<Directory /home/jstorta/domains/dev8.localdev.local/wp-content>
     Options FollowSymLinks
     Require all granted
 </Directory>

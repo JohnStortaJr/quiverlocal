@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 
-import os
 from smlib.core import *
-from smlib.info import *
 from smlib.format import *
+from smlib.info import *
 from smlib.create import *
 from smlib.trust import *
 from smlib.delete import *
@@ -49,7 +48,5 @@ while keepRunning:
         case 6:
             getTablePrefixes()
         case _:
-            print(background.BYELLOW + "Unknown selection" + background.END)
-
-    #input("Hit ENTER to Continue")
-            
+            print("")
+            print(background.BYELLOW + "Unknown selection" + background.END)         

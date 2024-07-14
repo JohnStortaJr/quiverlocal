@@ -45,12 +45,15 @@ def deleteSite(localDatabase = quiverDB):
         print(json.dumps(siteList[selection-1], indent=4))
         print("")
         confirmationCount = 0
-        confirmation = input(style.BOLD + "Are you sure you wish to delete this site [y/N]? " + style.END).strip()
+        confirmation = input(background.BMAGENTA + "There is no turning back. " + background.END + "\n" + style.BOLD + "Are you certain you wish to " + style.END + style.BLINK + "permanently" + style.END + style.BOLD + " delete this site [y/N]? " + style.END).strip()
         if confirmation == "y" or confirmation == "Y":
             confirmationCount += 1
-            confirmation = input(background.BMAGENTA + "There is no turning back. " + background.END + "\n" + style.BOLD + "Are you certain you wish to " + style.END + style.BLINK + "permanently" + style.END + style.BOLD + " delete this site [y/N]? " + style.END).strip()
-            if confirmation == "y" or confirmation == "Y":
+            confirmation = input(style.BOLD + "Type the site name to confirm deletion [" + style.END + siteList[selection-1]["siteName"] + style.BOLD + "]: " + style.END ).strip()
+            if confirmation == siteList[selection-1]["siteName"]:
                 confirmationCount += 1
+            else:
+                print("")
+                print(style.BOLD + "Entered site name [" + style.END + confirmation + style.BOLD + "] does not match selection [" + style.END + siteList[selection-1]["siteName"] + style.BOLD + "]" + style.END)
 
         if confirmationCount < 2:
             # Insufficient confirmations. Return without taking any action.
