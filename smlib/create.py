@@ -146,7 +146,7 @@ def changeApacheOwnership(targetSite):
 
 ### Rename the folder to match the domain name and create a new wp-config file from the sample included in the download
 def installWordPress(targetSite):
-    print(style.BOLD + "Installing WordPress..." + style.END)
+    print(style.BOLD + "►►► Installing WordPress..." + style.END)
 
     # Download and extract the latest WordPress files
     runCommand("curl https://wordpress.org/latest.tar.gz | tar zx -C " + targetSite["domainRoot"])
@@ -160,7 +160,7 @@ def installWordPress(targetSite):
 
 ### Creates the configuration files needed for Apache
 def configureApache(targetSite):
-    print(style.BOLD + "Configuring the Apache web server" + style.END)
+    print(style.BOLD + "►►► Configuring the Apache web server..." + style.END)
 
     # This first step is to create the core domain configuration that will be used for all Virtual Hosts
     # This file indicates the servername that ties this configuration to the request
@@ -187,6 +187,7 @@ def configureApache(targetSite):
 
 ### This creates an empty database for the site
 def createDatabase(targetSite):
+    print(style.BOLD + "►►► Creating WordPress database..." + style.END)
     shutil.copyfile(quiverHome + "/base/default_dbsetup.sql", quiverHome + "/tmp/tdbconf")
     runCommand("sed -i \"s|__DBNAME__|" + targetSite["dbName"] + "|g\" " + quiverHome + "/tmp/tdbconf")
     runCommand("sed -i \"s|__DBUSER__|" + targetSite["dbUser"] + "|g\" " + quiverHome + "/tmp/tdbconf")
@@ -197,7 +198,7 @@ def createDatabase(targetSite):
 
 ### This updates the wp-config file to point to the new database with all the correct login information
 def configureWordPressDatabaseConnection(targetSite):
-    print(style.BOLD + "Updating WordPress database connection information" + style.END)
+    print(style.BOLD + "►►► Updating WordPress database connection information..." + style.END)
 
     shutil.copyfile(targetSite["domainHome"] + "/wp-config.php", quiverHome + "/tmp/twpconf")
 
@@ -249,7 +250,7 @@ def getTablePrefix(targetSite):
 
 ### Import WordPress files from a user-specified export (tar.gz format)
 def importFiles(targetSite):
-    print(style.BOLD + "Importing WordPress files from " + style.END + targetSite["importFile"])
+    print(style.BOLD + "►►► Importing WordPress files from " + style.END + targetSite["importFile"] + "...")
 
     os.mkdir(targetSite["domainHome"])
     runCommand("tar -xzvf " + targetSite["importFile"] + " -C " + targetSite["domainHome"] +  " --strip-components=1")
@@ -257,7 +258,7 @@ def importFiles(targetSite):
 
 ### Import WordPress data from a user-specified export (sql.gz format)
 def importData(targetSite):
-    print(style.BOLD + "Importing WordPress data from " + style.END + targetSite["importData"])
+    print(style.BOLD + "►►► Importing WordPress data from " + style.END + targetSite["importData"] + "...")
 
     runCommand("gzip -d " + targetSite["importData"])
     runCommand("mysql -u root " + targetSite["dbName"] + " < " + targetSite["importData"][:-3], True)
@@ -267,7 +268,7 @@ def importData(targetSite):
 ### Update the siteurl and home values in the WordPress database to match the local domain rather than the imported source
 ### Specify whether the target URL should use http or https
 def updateSiteValues(targetSite, protocol="http"):
-    print(style.BOLD + "Updating local site URLs" + style.END)
+    print(style.BOLD + "►►► Updating local site URLs..." + style.END)
     # Need to change the siteurl and home values
     commandString = "mysql -u root " + targetSite["dbName"] + " -e \"UPDATE " + targetSite["tablePrefix"] + "_options SET option_value = '" + protocol + "://" + targetSite["domainName"] + "' WHERE option_name = 'siteurl';\""
     #print(commandString)

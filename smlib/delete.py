@@ -71,6 +71,7 @@ def deleteSite(localDatabase = quiverDB):
 
 
 def deleteSiteConfiguration(targetSite):
+    print(style.BOLD + "►►► Deleteing site files and data..." + style.END)
     # Disable the site in apache
     runCommand("a2dissite " + targetSite["siteName"], True)
 
