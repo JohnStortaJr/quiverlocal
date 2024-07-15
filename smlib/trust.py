@@ -45,14 +45,21 @@ def trustSite(localDatabase = quiverDB):
             continue
         elif selection == 0:
             return
-        
+
+        siteToTrust = siteList[selection-1].copy()
+
         if siteList[selection-1]["isTrusted"]:
             print(background.BYELLOW + siteList[selection-1]["siteName"] + " is already trusted" + background.END)
             confirmation = input("Do you wish to change the certificate used by this site [y/N]? ").strip()
 
             if (confirmation != "y") and (confirmation != "Y"): continue
 
-        siteToTrust = siteList[selection-1].copy()
+        # Clear existing configuration except current key and certificate
+        siteToTrust["certID"] = ""
+        siteToTrust["certRequest"] = ""
+        siteToTrust["certConfig"] = ""
+        siteToTrust["certRootKey"] = ""
+        siteToTrust["certRoot"] = ""
 
         selection = getInput("Do you already have a signed certificate you would like to use [y/N]? ")
 
@@ -108,37 +115,72 @@ def getCertificate(targetSite):
     return targetSite
 
 
-def createNewCertificates(targetSite):
-    certDuration = str(targetSite["certDuration"])
-    print("Create Root Key")
-    targetSite["certID"] = str(random.randint(11111111, 99999999))
-    targetSite["certRootKey"] = targetSite["certPath"] + targetSite["siteName"] + "_CA" + targetSite["certID"] + ".key"
-    runCommand("openssl genrsa -aes256 -out " + targetSite["certRootKey"] + " 2048")
 
-    print("Create Root Certificate")
-    targetSite["certRoot"] = targetSite["certPath"] + targetSite["siteName"] + "_CA" + targetSite["certID"] + ".pem"
-    runCommand("openssl req -x509 -new -noenc -key " + targetSite["certRootKey"] + " -sha256 -days " + certDuration + " -subj '/C=XX/ST=XX/L=Quiver Locality/O=Fake Quiver Company/OU=Arrows/CN=" + targetSite["domainName"] + "' -out " + targetSite["certRoot"] )
+def createRootCertificate(targetSite):
+    # Default to the current certificate key file, if there is one. Otherwise, assume siteName.key
+    defaultCertKeyFile = targetSite["certRootKey"]
+    if not defaultCertKeyFile: defaultCertKeyFile = targetSite["userHome"] + "/certificates/" + targetSite["siteName"] + "_CA.key"
+    #print(json.dumps(targetSite, indent=4))
 
-    print("Create Website key")
-    targetSite["certKey"] = targetSite["certPath"] +  targetSite["siteName"] + "_" + targetSite["certID"] + ".key"
-    runCommand("openssl genrsa -out " + targetSite["certKey"] + " 2048")
+    # Capture the desired key from the user. This should be the absolute path to the signed .key file
+    targetSite["certRootKey"] = input(style.BOLD + "Root Certificate key (.key) [" + defaultCertKeyFile + "]: " + style.END).strip()
+    if not targetSite["certRootKey"]: targetSite["certRootKey"] = defaultCertKeyFile
 
-    print("Create Certificate Request")
-    targetSite["certRequest"] = targetSite["certPath"] + targetSite["siteName"] + "_" + targetSite["certID"] + ".csr"
-    runCommand("openssl req -new -key " + targetSite["certKey"] + " -subj '/C=XX/ST=XX/L=Quiver Locality/O=Fake Quiver Company/OU=Arrows/CN=" + targetSite["domainName"] + "' -out " + targetSite["certRequest"] )
+    # Default to the current certificate file, if there is one. Otherwise, assume siteName.crt
+    defaultCertRootFile = targetSite["certRoot"]
+    if not defaultCertRootFile: defaultCertRootFile = targetSite["userHome"] + "/certificates/" + targetSite["siteName"] + "_CA.pem"
 
-    print("Create Certificate Configuration File")
-    targetSite["certConfig"] = targetSite["certPath"] + targetSite["siteName"] + "_" + targetSite["certID"] + ".ext"
-    runCommand("sed 's|__DOMAINNAME__|" + targetSite["domainName"] + "|g' " + quiverHome + "/base/default_cert.ext > " + targetSite["certConfig"])
+    # Capture the desired certificate from the user. This should be the absolute path to the signed .pem file
+    targetSite["certRoot"] = input(style.BOLD + "Root Certificate (.pem) [" + defaultCertRootFile + "]: " + style.END).strip()
+    if not targetSite["certRoot"]: targetSite["certRoot"] = defaultCertRootFile
 
-    print("Create Signed Website Certificate")
-    targetSite["certificate"] = targetSite["certPath"] + targetSite["siteName"] + "_" + targetSite["certID"] + ".crt"
-    runCommand("openssl x509 -req -in " + targetSite["certRequest"] + " -CA " + targetSite["certRoot"] + " -CAkey " + targetSite["certRootKey"] + " -CAcreateserial -out " + targetSite["certificate"] + " -days " + certDuration + " -sha256 -extfile " + targetSite["certConfig"])
-
-    print("Save the dictionary with the updated certificate and key file paths")
+    # Save the dictionary with the updated certificate and key file paths
     writeSiteConfig(targetSite)
     #print(currentSite["importFile"])
 
+    return targetSite
+
+
+
+
+def createNewCertificates(targetSite):
+    certDuration = str(targetSite["certDuration"])
+    targetSite["certID"] = str(random.randint(11111111, 99999999))
+    selection = getInput("Do you already have a Root CA certificate you would like to use [y/N]? ")
+
+    if (selection == "y") or (selection == "Y"):
+        # Get the paths to the certificate files from the user
+        targetSite = createRootCertificate(targetSite)
+    else:
+        print(style.BOLD + "►►► Create Root Key" + style.END)
+        targetSite["certRootKey"] = targetSite["certPath"] + targetSite["siteName"] + "_CA" + targetSite["certID"] + ".key"
+        runCommand("openssl genrsa -aes256 -out " + targetSite["certRootKey"] + " 2048")
+
+        print(style.BOLD + "►►► Create Root Certificate" + style.END)
+        targetSite["certRoot"] = targetSite["certPath"] + targetSite["siteName"] + "_CA" + targetSite["certID"] + ".pem"
+        runCommand("openssl req -x509 -new -noenc -key " + targetSite["certRootKey"] + " -sha256 -days " + certDuration + " -subj '/C=XX/ST=XX/L=Quiver Locality/O=Fake Quiver Company/OU=Arrows/CN=" + targetSite["domainName"] + "' -out " + targetSite["certRoot"] )
+
+    print(style.BOLD + "►►► Create Website key" + style.END)
+    targetSite["certKey"] = targetSite["certPath"] +  targetSite["siteName"] + "_" + targetSite["certID"] + ".key"
+    runCommand("openssl genrsa -out " + targetSite["certKey"] + " 2048")
+
+    print(style.BOLD + "►►► Create Certificate Request" + style.END)
+    targetSite["certRequest"] = targetSite["certPath"] + targetSite["siteName"] + "_" + targetSite["certID"] + ".csr"
+    runCommand("openssl req -new -key " + targetSite["certKey"] + " -subj '/C=XX/ST=XX/L=Quiver Locality/O=Fake Quiver Company/OU=Arrows/CN=" + targetSite["domainName"] + "' -out " + targetSite["certRequest"] )
+
+    print(style.BOLD + "►►► Create Certificate Configuration File" + style.END)
+    targetSite["certConfig"] = targetSite["certPath"] + targetSite["siteName"] + "_" + targetSite["certID"] + ".ext"
+    runCommand("sed 's|__DOMAINNAME__|" + targetSite["domainName"] + "|g' " + quiverHome + "/base/default_cert.ext > " + targetSite["certConfig"])
+
+    print(style.BOLD + "►►► Create Signed Website Certificate" + style.END)
+    targetSite["certificate"] = targetSite["certPath"] + targetSite["siteName"] + "_" + targetSite["certID"] + ".crt"
+    runCommand("openssl x509 -req -in " + targetSite["certRequest"] + " -CA " + targetSite["certRoot"] + " -CAkey " + targetSite["certRootKey"] + " -CAcreateserial -out " + targetSite["certificate"] + " -days " + certDuration + " -sha256 -extfile " + targetSite["certConfig"])
+
+    #Save the dictionary with the updated certificate and key file paths
+    writeSiteConfig(targetSite)
+    #print(currentSite["importFile"])
+
+    print("")
     print("Copy the Root certificate [" + targetSite["certRoot"] + "] to your local machine and added it as a trusted Certificate Authority")
     # Provide instructions on how to do this
 

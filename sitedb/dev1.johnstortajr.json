@@ -6,6 +6,7 @@
     "tablePrefix": "wp_eduxzu",
     "userName": "jstorta",
     "userHome": "/home/jstorta",
+    "domainRoot": "/home/jstorta/domains",
     "domainHome": "/home/jstorta/domains/dev1.johnstortajr.local",
     "domainConfig": "/home/jstorta/domains/config/dev1.johnstortajr.core",
     "apacheHome": "/etc/apache2",
