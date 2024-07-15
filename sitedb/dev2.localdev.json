@@ -14,7 +14,7 @@
     "apacheLog": "/var/log/apache2",
     "isTrusted": true,
     "certPath": "",
-    "certID": "MyCert",
+    "certID": "",
     "certDuration": 365,
     "certKey": "/home/jstorta/certificates/localdev.key",
     "certificate": "/home/jstorta/certificates/localdev.crt",

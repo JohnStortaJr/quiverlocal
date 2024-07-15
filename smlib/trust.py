@@ -89,6 +89,82 @@ def trustSite(localDatabase = quiverDB):
         print("the site can be accessed using https://" + siteToTrust["domainName"] + style.END)
 
 
+def untrustSite(localDatabase = quiverDB):
+    keepRunning = True
+
+    while keepRunning:
+        print("")
+        menuCounter = 0
+        print(6 * "-" , "Installed Sites" , 6 * "-")
+
+        siteFileList = sorted(os.listdir(localDatabase))
+
+        siteList = []
+        for i in siteFileList:
+            menuCounter += 1
+
+            if i.endswith(".json"):
+                with open(quiverDB + i, 'r') as inFile:
+                    foundSite = json.load(inFile)
+                    siteList.append(foundSite)
+                    updateTablePrefix(foundSite)
+
+                    if foundSite["isTrusted"]:
+                        print(style.BOLD + str(menuCounter) + " " + foundSite["siteName"] + " ♥" + style.END)
+                    else:
+                        print(style.FAINT + str(menuCounter) + " " + foundSite["siteName"] + style.END )
+
+        print("")
+        print(style.BOLD + "0 " + style.END + "Back")    
+        print(21 * "-")
+
+        selection = int(getInput("Which site would you like to remove trust from [0-" + str(menuCounter) + "]? ", True))
+
+        if selection > len(siteList):
+            print(background.BYELLOW + "Unknown selection" + background.END)
+            continue
+        elif selection == 0:
+            return
+
+        siteToTrust = siteList[selection-1].copy()
+
+        if not siteList[selection-1]["isTrusted"]:
+            print(background.BYELLOW + siteList[selection-1]["siteName"] + " is not trusted" + background.END)
+            continue
+
+        confirmation = input(background.BMAGENTA + "There is no turning back. " + background.END + "\n" + style.BOLD + "Are you certain you wish to remove the SSL certificate from this site [y/N]? " + style.END).strip()
+        if confirmation != "y" and confirmation != "Y":
+            # Insufficient confirmations. Return without taking any action.
+            print("")
+            print(background.BYELLOW + "Certificate removal aborted!" + background.END + style.ITALIC + " (no changes made)" + style.END)
+            continue
+
+        # Clear existing configuration except current key and certificate
+        siteToTrust["certID"] = ""
+        siteToTrust["certKey"] = ""
+        siteToTrust["certificate"] = ""
+        siteToTrust["certRequest"] = ""
+        siteToTrust["certConfig"] = ""
+        siteToTrust["certRootKey"] = ""
+        siteToTrust["certRoot"] = ""
+
+        removeCertificate(siteToTrust)
+
+        # Update the WordPress database to reflect the http URLs
+        updateSiteValues(siteToTrust, "http")
+
+        restartApache()
+
+        # Mark this site as trusted and write the dictionary to the quiver database
+        siteToTrust["isTrusted"] = False
+        writeSiteConfig(siteToTrust)
+
+        print("")
+        print(style.BOLD + siteToTrust["siteName"] + style.END + " is no longer trusted " + style.END)
+        print("The site can now only be accessed using http://" + siteToTrust["domainName"] + style.END)
+
+
+
 
 def getCertificate(targetSite):
     # Default to the current certificate key file, if there is one. Otherwise, assume siteName.key
@@ -193,7 +269,7 @@ def addCertificate(targetSite):
     # Any user customizations will be overwritten
     shutil.copyfile(quiverHome + "/base/default_https.conf", quiverHome + "/tmp/thttpsconf")
 
-    print(style.BOLD + "Adding SSL certificate paths to the Apache configuration" + style.END)
+    print(style.BOLD + "►►► Adding SSL certificate paths to the Apache configuration" + style.END)
 
     runCommand("sed -i \"s|__CORECONFIG__|" + targetSite["domainConfig"] + "|g\" " + quiverHome + "/tmp/thttpsconf")
     runCommand("sed -i \"s|__CERTKEYFILE__|" + targetSite["certKey"] + "|g\" " + quiverHome + "/tmp/thttpsconf")
@@ -209,4 +285,35 @@ def addCertificate(targetSite):
     runCommand("a2enmod ssl", True)
 
 
+def removeCertificate(targetSite):
+    # The config will always start with the default configuration
+    # Any user customizations will be overwritten
+    shutil.copyfile(quiverHome + "/base/default_http.conf", quiverHome + "/tmp/thttpconf")
+
+    print(style.BOLD + "►►► Removing SSL certificate paths from the Apache configuration" + style.END)
+
+    runCommand("sed -i \"s|__CORECONFIG__|" + targetSite["domainConfig"] + "|g\" " + quiverHome + "/tmp/thttpconf")
+
+    runCommand("mv " + quiverHome + "/tmp/thttpconf " + targetSite["apacheConfig"], True)
+    runCommand("chown root: " + targetSite["apacheConfig"], True)
+
+
+def showActiveCertificates(localDatabase = quiverDB):
+    print("")
+    print(6 * "-" , "Active Certificates" , 6 * "-")
+
+    siteFileList = sorted(os.listdir(localDatabase))
+
+    for i in siteFileList:
+        if i.endswith(".json"):
+            with open(quiverDB + i, 'r') as inFile:
+                foundSite = json.load(inFile)
+
+                if foundSite["isTrusted"]:
+                    print(style.BOLD + "https://" + foundSite["domainName"] + style.END + "\t►►► " + foundSite["certificate"])
+
+    print("")
+    print(style.BOLD + "0 " + style.END + "Back")    
+    print(21 * "-")
+    print("")
 
