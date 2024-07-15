@@ -6,6 +6,7 @@ from smlib.info import *
 from smlib.create import *
 import json
 import shutil
+import random
 
 def trustSite(localDatabase = quiverDB):
     keepRunning = True
@@ -52,11 +53,16 @@ def trustSite(localDatabase = quiverDB):
             if (confirmation != "y") and (confirmation != "Y"): continue
 
         siteToTrust = siteList[selection-1].copy()
-        #print(json.dumps(siteToTrust, indent=4))
-        print("This will add an existing SSL certificate to the site. The signed certificates must already exist.")
 
-        # Get the paths to the certificate files from the user
-        siteToTrust = getCertificate(siteToTrust)
+        selection = getInput("Do you already have a signed certificate you would like to use [y/N]? ")
+
+        if (selection == "y") or (selection == "Y"):
+            # Get the paths to the certificate files from the user
+            siteToTrust = getCertificate(siteToTrust)
+        else:
+            siteToTrust = createNewCertificates(siteToTrust)
+
+        #print(json.dumps(siteToTrust, indent=4))
 
         # Add the certificate paths to the Apache configuration
         addCertificate(siteToTrust)
@@ -81,7 +87,7 @@ def getCertificate(targetSite):
     # Default to the current certificate key file, if there is one. Otherwise, assume siteName.key
     defaultCertKeyFile = targetSite["certKey"]
     if not defaultCertKeyFile: defaultCertKeyFile = targetSite["userHome"] + "/certificates/" + targetSite["siteName"] + ".key"
-    print(json.dumps(targetSite, indent=4))
+    #print(json.dumps(targetSite, indent=4))
 
     # Capture the desired key from the user. This should be the absolute path to the signed .key file
     targetSite["certKey"] = input(style.BOLD + "Certificate key (.key) [" + defaultCertKeyFile + "]: " + style.END).strip()
@@ -100,6 +106,44 @@ def getCertificate(targetSite):
     #print(currentSite["importFile"])
 
     return targetSite
+
+
+def createNewCertificates(targetSite):
+    certDuration = str(targetSite["certDuration"])
+    print("Create Root Key")
+    targetSite["certID"] = str(random.randint(11111111, 99999999))
+    targetSite["certRootKey"] = targetSite["certPath"] + targetSite["siteName"] + "_CA" + targetSite["certID"] + ".key"
+    runCommand("openssl genrsa -aes256 -out " + targetSite["certRootKey"] + " 2048")
+
+    print("Create Root Certificate")
+    targetSite["certRoot"] = targetSite["certPath"] + targetSite["siteName"] + "_CA" + targetSite["certID"] + ".pem"
+    runCommand("openssl req -x509 -new -noenc -key " + targetSite["certRootKey"] + " -sha256 -days " + certDuration + " -subj '/C=XX/ST=XX/L=Quiver Locality/O=Fake Quiver Company/OU=Arrows/CN=" + targetSite["domainName"] + "' -out " + targetSite["certRoot"] )
+
+    print("Create Website key")
+    targetSite["certKey"] = targetSite["certPath"] +  targetSite["siteName"] + "_" + targetSite["certID"] + ".key"
+    runCommand("openssl genrsa -out " + targetSite["certKey"] + " 2048")
+
+    print("Create Certificate Request")
+    targetSite["certRequest"] = targetSite["certPath"] + targetSite["siteName"] + "_" + targetSite["certID"] + ".csr"
+    runCommand("openssl req -new -key " + targetSite["certKey"] + " -subj '/C=XX/ST=XX/L=Quiver Locality/O=Fake Quiver Company/OU=Arrows/CN=" + targetSite["domainName"] + "' -out " + targetSite["certRequest"] )
+
+    print("Create Certificate Configuration File")
+    targetSite["certConfig"] = targetSite["certPath"] + targetSite["siteName"] + "_" + targetSite["certID"] + ".ext"
+    runCommand("sed 's|__DOMAINNAME__|" + targetSite["domainName"] + "|g' " + quiverHome + "/base/default_cert.ext > " + targetSite["certConfig"])
+
+    print("Create Signed Website Certificate")
+    targetSite["certificate"] = targetSite["certPath"] + targetSite["siteName"] + "_" + targetSite["certID"] + ".crt"
+    runCommand("openssl x509 -req -in " + targetSite["certRequest"] + " -CA " + targetSite["certRoot"] + " -CAkey " + targetSite["certRootKey"] + " -CAcreateserial -out " + targetSite["certificate"] + " -days " + certDuration + " -sha256 -extfile " + targetSite["certConfig"])
+
+    print("Save the dictionary with the updated certificate and key file paths")
+    writeSiteConfig(targetSite)
+    #print(currentSite["importFile"])
+
+    print("Copy the Root certificate [" + targetSite["certRoot"] + "] to your local machine and added it as a trusted Certificate Authority")
+    # Provide instructions on how to do this
+
+    return targetSite
+
 
 
 def addCertificate(targetSite):

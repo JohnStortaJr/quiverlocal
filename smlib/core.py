@@ -27,7 +27,7 @@ siteTemplate = {
     "isTrusted": False,
     "certPath": "",
     "certName": "",
-    "certDuration": 365,
+    "certDuration": 1825,
     "certKey": "",
     "certificate": "",
     "certRequest": "",
@@ -47,6 +47,7 @@ siteTemplate["domainHome"] = siteTemplate["domainRoot"] + "/" + siteTemplate["do
 siteTemplate["domainConfig"] = siteTemplate["domainHome"] + "/domains/config/" + siteTemplate["domainName"] + ".core"
 siteTemplate["apacheConfig"] = siteTemplate["apacheHome"] + "/sites-available/" + siteTemplate["domainName"] + ".conf"
 siteTemplate["importPath"] = siteTemplate["userHome"] + "/exports"
+siteTemplate["certPath"] = siteTemplate["userHome"] + "/certificates/"
 
 # Cleans troublesome characters from a string
 # There is a default list of characters, but a custom list can be provided
@@ -79,6 +80,7 @@ def getInput(promptString, requireInt=False):
 # Build a temporary bash script to run a linux command
 # For use in cases where there is not a clean python-native way to perform a task
 def runCommand(commandString="whoami", asRoot=False):
+    #print(commandString)
     localPID = random.randint(111111, 999999)
     tempScriptName = quiverHome + "/tmp/" + "tScript" + str(localPID)
 

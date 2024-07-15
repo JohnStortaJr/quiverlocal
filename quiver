@@ -17,13 +17,13 @@ while keepRunning:
     print(style.NEGATIVE + "1" + style.END + " List Sites")
     print(style.NEGATIVE + "2" + style.END + " New Install")
     print(style.NEGATIVE + "3" + style.END + " Import Site")
-    print(style.NEGATIVE + "4" + style.END + " Add SSL to Site")
+    print(style.NEGATIVE + "4" + style.END + " Add Certificate to Site")
     print(style.NEGATIVE + "5" + style.END + " Delete Site")
     print("")
     print(style.NEGATIVE + "0" + style.END + " Exit")
     print(21 * "-")
 
-    selection = int(getInput("Enter option [0-5]: ", True))
+    selection = int(getInput("Enter option [0-6]: ", True))
 
     match selection:
         case 0:
@@ -45,7 +45,7 @@ while keepRunning:
         case 5:
             print("Delete Site")
             deleteSite()
-        case 6:
+        case 20:
             getTablePrefixes()
         case _:
             print("")

@@ -107,7 +107,6 @@ def displaySiteConfig(siteName):
 
 ### Write the provided dictionary to siteName.json in sitedb (overwriting any existing values)
 def writeSiteConfig(siteDictionary):
-    print(json.dumps(siteDictionary, indent=4))
     with open(quiverDB + siteDictionary["siteName"] + ".json", 'w') as outFile:
         json.dump(siteDictionary, outFile, indent=4)
         outFile.write("\n")
