@@ -48,28 +48,19 @@ def getSiteList(localDatabase = quiverDB):
         input("Hit ENTER to Continue")
 
 
-def getTablePrefixes():
-
-    print("")
-    menuCounter = 0
-    print(6 * "-" , "Installed Sites" , 6 * "-")
-
-    siteFileList = sorted(os.listdir(quiverDB))
-    siteList = []
-
-    for i in siteFileList:
-        menuCounter += 1
-
-        if i.endswith(".json"):
-            with open(quiverDB + i, 'r') as inFile:
-                foundSite = json.load(inFile)
-                siteList.append(foundSite)
-                tablePrefix = runCommand("awk '/table_prefix/{print $3}' " + foundSite["domainHome"] + "/wp-config.php")[1:-3]
-                print(foundSite["siteName"] + ">> " + tablePrefix)
-
 
 def updateTablePrefix(targetSite):
-    targetSite["tablePrefix"] = runCommand("awk '/table_prefix/{print $3}' " + targetSite["domainHome"] + "/wp-config.php")[1:-3]
+    with open(targetSite["domainHome"] + "/wp-config.php", 'r') as inFile:
+        # Read all lines form the file into a list
+        configLines = inFile.readlines()
+
+        # Check each line until finding table_prefix and then return that value
+        for i in configLines:
+            if "table_prefix" in i:
+                foundLine = i
+                break
+
+    targetSite["tablePrefix"] = foundLine.split("=")[1][2:-4]
     writeSiteConfig(targetSite)
 
 

@@ -132,12 +132,13 @@ def isSiteInfoCorrect(targetSite, isImport=False):
 ### As a result of this, sites on this server must all be owned by the same user
 def changeApacheOwnership(targetSite):
     # Create backup and temp envvars files
-    shutil.copyfile(targetSite["apacheHome"] + "/envvars", quiverHome + "/tmp/tenvvars.bak")
     shutil.copyfile(targetSite["apacheHome"] + "/envvars", quiverHome + "/tmp/tenvvars")
     
     # Change values so that Apache runs as current user
-    runCommand("sed -i 's/APACHE_RUN_USER=www-data/APACHE_RUN_USER=" + targetSite["userName"] + "/g' " + quiverHome + "/tmp/tenvvars")
-    runCommand("sed -i 's/APACHE_RUN_GROUP=www-data/APACHE_RUN_GROUP=" + targetSite["userName"] + "/g' " + quiverHome + "/tmp/tenvvars")
+    replaceFileText(quiverHome + "/tmp/tenvvars", "APACHE_RUN_USER=www-data", "APACHE_RUN_USER=" + targetSite["userName"])
+    replaceFileText(quiverHome + "/tmp/tenvvars", "APACHE_RUN_GROUP=www-data", "APACHE_RUN_GROUP=" + targetSite["userName"])
+    #runCommand("sed -i 's/APACHE_RUN_USER=www-data/APACHE_RUN_USER=" + targetSite["userName"] + "/g' " + quiverHome + "/tmp/tenvvars")
+    #runCommand("sed -i 's/APACHE_RUN_GROUP=www-data/APACHE_RUN_GROUP=" + targetSite["userName"] + "/g' " + quiverHome + "/tmp/tenvvars")
     
     # Overwrite envvars configuration (runAs ROOT)
     runCommand("mv " + quiverHome + "/tmp/tenvvars " + targetSite["apacheHome"] + "/envvars", True)
@@ -148,11 +149,15 @@ def changeApacheOwnership(targetSite):
 def installWordPress(targetSite):
     print(style.BOLD + "►►► Installing WordPress..." + style.END)
 
+    runCommand("curl --output-dir " + quiverHome + "/tmp --create-dirs -O https://wordpress.org/latest.tar.gz")
+    runCommand("mkdir -p " + targetSite["domainHome"])
+    runCommand("tar -zxvf " + quiverHome + "/tmp/latest.tar.gz" + " -C " + targetSite["domainHome"] + " --strip-components=1")
+
     # Download and extract the latest WordPress files
-    runCommand("curl https://wordpress.org/latest.tar.gz | tar zx -C " + targetSite["domainRoot"])
+    #runCommand("curl https://wordpress.org/latest.tar.gz | tar zx -C " + targetSite["domainRoot"])
 
     # Rename the default wordpress directory to the new domain name
-    os.rename(targetSite["domainRoot"] + "/wordpress", targetSite["domainHome"])
+    #os.rename(targetSite["domainRoot"] + "/wordpress", targetSite["domainHome"])
 
     # Create the initial WordPress configuration file using the sample provided in the download
     shutil.copyfile(targetSite["domainHome"] + "/wp-config-sample.php", targetSite["domainHome"] + "/wp-config.php")
@@ -164,14 +169,19 @@ def configureApache(targetSite):
 
     # This first step is to create the core domain configuration that will be used for all Virtual Hosts
     # This file indicates the servername that ties this configuration to the request
-    runCommand("sed 's|__SERVERADMIN__|" + targetSite["serverAdmin"] + "|g' " + quiverHome + "/base/default.core > " + quiverHome + "/tmp/tcoreconf")
-    runCommand("sed -i 's|__DOMAINNAME__|" + targetSite["domainName"] + "|g' " + quiverHome + "/tmp/tcoreconf")
-    runCommand("sed -i 's|__DOMAINDIR__|" + targetSite["domainHome"] + "|g' " + quiverHome + "/tmp/tcoreconf")
+    shutil.copyfile(quiverHome + "/base/default.core", quiverHome + "/tmp/tcoreconf")
+    replaceFileText(quiverHome + "/tmp/tcoreconf", "__SERVERADMIN__", targetSite["serverAdmin"])
+    replaceFileText(quiverHome + "/tmp/tcoreconf", "__DOMAINNAME__", targetSite["domainName"])
+    replaceFileText(quiverHome + "/tmp/tcoreconf", "__DOMAINDIR__", targetSite["domainHome"])
+    #runCommand("sed 's|__SERVERADMIN__|" + targetSite["serverAdmin"] + "|g' " + quiverHome + "/base/default.core > " + quiverHome + "/tmp/tcoreconf")
+    #runCommand("sed -i 's|__DOMAINNAME__|" + targetSite["domainName"] + "|g' " + quiverHome + "/tmp/tcoreconf")
+    #runCommand("sed -i 's|__DOMAINDIR__|" + targetSite["domainHome"] + "|g' " + quiverHome + "/tmp/tcoreconf")
     shutil.copyfile(quiverHome + "/tmp/tcoreconf", targetSite["domainConfig"])
 
     # Next we need to create the Apache configuration files for this site
     shutil.copyfile(quiverHome + "/base/default_http.conf", quiverHome + "/tmp/thttpconf")
-    runCommand("sed -i \"s|__CORECONFIG__|" + targetSite["domainConfig"] + "|g\" " + quiverHome + "/tmp/thttpconf")
+    replaceFileText(quiverHome + "/tmp/thttpconf", "__CORECONFIG__", targetSite["domainConfig"])
+    #runCommand("sed -i \"s|__CORECONFIG__|" + targetSite["domainConfig"] + "|g\" " + quiverHome + "/tmp/thttpconf")
     runCommand("mv " + quiverHome + "/tmp/thttpconf " + targetSite["apacheConfig"], True)
     runCommand("chown root: " + targetSite["apacheConfig"], True)
 
@@ -188,12 +198,16 @@ def configureApache(targetSite):
 ### This creates an empty database for the site
 def createDatabase(targetSite):
     print(style.BOLD + "►►► Creating WordPress database..." + style.END)
-    shutil.copyfile(quiverHome + "/base/default_dbsetup.sql", quiverHome + "/tmp/tdbconf")
-    runCommand("sed -i \"s|__DBNAME__|" + targetSite["dbName"] + "|g\" " + quiverHome + "/tmp/tdbconf")
-    runCommand("sed -i \"s|__DBUSER__|" + targetSite["dbUser"] + "|g\" " + quiverHome + "/tmp/tdbconf")
-    runCommand("sed -i \"s|__DBPASS__|" + targetSite["dbPass"] + "|g\" " + quiverHome + "/tmp/tdbconf")
 
-    runCommand("mysql -u root < " + quiverHome + "/tmp/tdbconf", True)
+    shutil.copyfile(quiverHome + "/base/default_dbsetup.sql", quiverHome + "/tmp/tdbconf")
+    replaceFileText(quiverHome + "/tmp/tdbconf", "__DBNAME__", targetSite["dbName"])
+    replaceFileText(quiverHome + "/tmp/tdbconf", "__DBUSER__", targetSite["dbUser"])
+    replaceFileText(quiverHome + "/tmp/tdbconf", "__DBPASS__", targetSite["dbPass"])
+    #runCommand("sed -i \"s|__DBNAME__|" + targetSite["dbName"] + "|g\" " + quiverHome + "/tmp/tdbconf")
+    #runCommand("sed -i \"s|__DBUSER__|" + targetSite["dbUser"] + "|g\" " + quiverHome + "/tmp/tdbconf")
+    #runCommand("sed -i \"s|__DBPASS__|" + targetSite["dbPass"] + "|g\" " + quiverHome + "/tmp/tdbconf")
+
+    oldRunCommand("mysql -u root < " + quiverHome + "/tmp/tdbconf", True)
 
 
 ### This updates the wp-config file to point to the new database with all the correct login information
@@ -203,17 +217,23 @@ def configureWordPressDatabaseConnection(targetSite):
     shutil.copyfile(targetSite["domainHome"] + "/wp-config.php", quiverHome + "/tmp/twpconf")
 
     # Remove cache entry (this is common on imported sites and will likely reference a production URL, which is not desired)
-    runCommand("sed -i '/WPCACHEHOME/d' " + quiverHome + "/tmp/twpconf")
+    replaceFileText(quiverHome + "/tmp/twpconf", "WPCACHEHOME", "")
+    #runCommand("sed -i '/WPCACHEHOME/d' " + quiverHome + "/tmp/twpconf")
 
     # Replace database connection information with local values
     NEW_DB_NAME_STRING="define( 'DB_NAME', '" + targetSite["dbName"] + "' );"
     NEW_DB_USER_STRING="define( 'DB_USER', '" + targetSite["dbUser"] + "' );"
     NEW_DB_PASS_STRING="define( 'DB_PASSWORD', '" + targetSite["dbPass"] + "' );"
     NEW_DB_HOST_STRING="define( 'DB_HOST', 'localhost' );"
-    runCommand("sed -i \"s|.*'DB_NAME'.*|" + NEW_DB_NAME_STRING + "|g\" " + quiverHome + "/tmp/twpconf")
-    runCommand("sed -i \"s|.*'DB_USER'.*|" + NEW_DB_USER_STRING + "|g\" " + quiverHome + "/tmp/twpconf")
-    runCommand("sed -i \"s|.*'DB_PASSWORD'.*|" + NEW_DB_PASS_STRING + "|g\" " + quiverHome + "/tmp/twpconf")
-    runCommand("sed -i \"s|.*'DB_HOST'.*|" + NEW_DB_HOST_STRING + "|g\" " + quiverHome + "/tmp/twpconf")
+    replaceFileText(quiverHome + "/tmp/twpconf", "DB_NAME", NEW_DB_NAME_STRING, True)
+    replaceFileText(quiverHome + "/tmp/twpconf", "DB_USER", NEW_DB_USER_STRING, True)
+    replaceFileText(quiverHome + "/tmp/twpconf", "DB_PASSWORD", NEW_DB_PASS_STRING, True)
+    replaceFileText(quiverHome + "/tmp/twpconf", "DB_HOST", NEW_DB_HOST_STRING, True)
+
+    #runCommand("sed -i \"s|.*'DB_NAME'.*|" + NEW_DB_NAME_STRING + "|g\" " + quiverHome + "/tmp/twpconf")
+    #runCommand("sed -i \"s|.*'DB_USER'.*|" + NEW_DB_USER_STRING + "|g\" " + quiverHome + "/tmp/twpconf")
+    #runCommand("sed -i \"s|.*'DB_PASSWORD'.*|" + NEW_DB_PASS_STRING + "|g\" " + quiverHome + "/tmp/twpconf")
+    #runCommand("sed -i \"s|.*'DB_HOST'.*|" + NEW_DB_HOST_STRING + "|g\" " + quiverHome + "/tmp/twpconf")
 
     # Update SALT keys
     # These keys are different from the ones that the WordPress site creates.
@@ -228,14 +248,23 @@ def configureWordPressDatabaseConnection(targetSite):
     NEW_LOGGED_IN_SALT="define( 'LOGGED_IN_SALT',   '" + secrets.token_hex(32) + "' );"
     NEW_NONCE_SALT="define( 'NONCE_SALT',       '" + secrets.token_hex(32) + "' );"
 
-    runCommand("sed -i \"s|.*'AUTH_KEY'.*|" + NEW_AUTH_KEY + "|g\" " + quiverHome + "/tmp/twpconf")
-    runCommand("sed -i \"s|.*'SECURE_AUTH_KEY'.*|" + NEW_SECURE_AUTH_KEY + "|g\" " + quiverHome + "/tmp/twpconf")
-    runCommand("sed -i \"s|.*'LOGGED_IN_KEY'.*|" + NEW_LOGGED_IN_KEY + "|g\" " + quiverHome + "/tmp/twpconf")
-    runCommand("sed -i \"s|.*'NONCE_KEY'.*|" + NEW_NONCE_KEY + "|g\" " + quiverHome + "/tmp/twpconf")
-    runCommand("sed -i \"s|.*'AUTH_SALT'.*|" + NEW_AUTH_SALT + "|g\" " + quiverHome + "/tmp/twpconf")
-    runCommand("sed -i \"s|.*'SECURE_AUTH_SALT'.*|" + NEW_SECURE_AUTH_SALT + "|g\" " + quiverHome + "/tmp/twpconf")
-    runCommand("sed -i \"s|.*'LOGGED_IN_SALT'.*|" + NEW_LOGGED_IN_SALT + "|g\" " + quiverHome + "/tmp/twpconf")
-    runCommand("sed -i \"s|.*'NONCE_SALT'.*|" + NEW_NONCE_SALT + "|g\" " + quiverHome + "/tmp/twpconf")
+    replaceFileText(quiverHome + "/tmp/twpconf", "'AUTH_KEY", NEW_AUTH_KEY, True)
+    replaceFileText(quiverHome + "/tmp/twpconf", "'SECURE_AUTH_KEY", NEW_SECURE_AUTH_KEY, True)
+    replaceFileText(quiverHome + "/tmp/twpconf", "'LOGGED_IN_KEY", NEW_LOGGED_IN_KEY, True)
+    replaceFileText(quiverHome + "/tmp/twpconf", "'NONCE_KEY", NEW_NONCE_KEY, True)
+    replaceFileText(quiverHome + "/tmp/twpconf", "'AUTH_SALT", NEW_AUTH_SALT, True)
+    replaceFileText(quiverHome + "/tmp/twpconf", "'SECURE_AUTH_SALT", NEW_SECURE_AUTH_SALT, True)
+    replaceFileText(quiverHome + "/tmp/twpconf", "'LOGGED_IN_SALT", NEW_LOGGED_IN_SALT, True)
+    replaceFileText(quiverHome + "/tmp/twpconf", "'NONCE_SALT", NEW_NONCE_SALT, True)
+
+    #runCommand("sed -i \"s|.*'AUTH_KEY'.*|" + NEW_AUTH_KEY + "|g\" " + quiverHome + "/tmp/twpconf")
+    #runCommand("sed -i \"s|.*'SECURE_AUTH_KEY'.*|" + NEW_SECURE_AUTH_KEY + "|g\" " + quiverHome + "/tmp/twpconf")
+    #runCommand("sed -i \"s|.*'LOGGED_IN_KEY'.*|" + NEW_LOGGED_IN_KEY + "|g\" " + quiverHome + "/tmp/twpconf")
+    #runCommand("sed -i \"s|.*'NONCE_KEY'.*|" + NEW_NONCE_KEY + "|g\" " + quiverHome + "/tmp/twpconf")
+    #runCommand("sed -i \"s|.*'AUTH_SALT'.*|" + NEW_AUTH_SALT + "|g\" " + quiverHome + "/tmp/twpconf")
+    #unCommand("sed -i \"s|.*'SECURE_AUTH_SALT'.*|" + NEW_SECURE_AUTH_SALT + "|g\" " + quiverHome + "/tmp/twpconf")
+    #unCommand("sed -i \"s|.*'LOGGED_IN_SALT'.*|" + NEW_LOGGED_IN_SALT + "|g\" " + quiverHome + "/tmp/twpconf")
+    #unCommand("sed -i \"s|.*'NONCE_SALT'.*|" + NEW_NONCE_SALT + "|g\" " + quiverHome + "/tmp/twpconf")
 
     shutil.copyfile(quiverHome + "/tmp/twpconf", targetSite["domainHome"] + "/wp-config.php")
 
@@ -243,8 +272,18 @@ def configureWordPressDatabaseConnection(targetSite):
 ### The table prefix is needed to properly run SQL commands
 ### It is contained within the wp-config file and needs to be extracted
 def getTablePrefix(targetSite):
-    # The [1:-3] extracts a substring starting at the 2nd character until the 3 character from the end
-    targetSite["tablePrefix"] =  runCommand("awk '/table_prefix/{print $3}' " + targetSite["domainHome"] + "/wp-config.php")[1:-3]
+    with open(targetSite["domainHome"] + "/wp-config.php", 'r') as inFile:
+        # Read all lines form the file into a list
+        configLines = inFile.readlines()
+
+        # Check each line until finding table_prefix and then return that value
+        for i in configLines:
+            if "table_prefix" in i:
+                foundLine = i
+                break
+        
+        targetSite["tablePrefix"] =  foundLine.split("=")[1][2:-4]
+
     return targetSite
 
 
@@ -261,7 +300,7 @@ def importData(targetSite):
     print(style.BOLD + "►►► Importing WordPress data from " + style.END + targetSite["importData"] + "...")
 
     runCommand("gzip -d " + targetSite["importData"])
-    runCommand("mysql -u root " + targetSite["dbName"] + " < " + targetSite["importData"][:-3], True)
+    oldRunCommand("mysql -u root " + targetSite["dbName"] + " < " + targetSite["importData"][:-3], True)
     runCommand("gzip " + targetSite["importData"][:-3])
 
 
@@ -272,11 +311,11 @@ def updateSiteValues(targetSite, protocol="http"):
     # Need to change the siteurl and home values
     commandString = "mysql -u root " + targetSite["dbName"] + " -e \"UPDATE " + targetSite["tablePrefix"] + "_options SET option_value = '" + protocol + "://" + targetSite["domainName"] + "' WHERE option_name = 'siteurl';\""
     #print(commandString)
-    runCommand(commandString, True)
+    oldRunCommand(commandString, True)
 
     commandString = "mysql -u root " + targetSite["dbName"] + " -e \"UPDATE " + targetSite["tablePrefix"] + "_options SET option_value = '" + protocol + "://" + targetSite["domainName"] + "' WHERE option_name = 'home';\""
     #print(commandString)
-    runCommand(commandString, True)
+    oldRunCommand(commandString, True)
 
 
 

@@ -13,14 +13,14 @@
  * * Database table prefix
  * * ABSPATH
  *
- * @link https://wordpress.org/documentation/article/editing-wp-config-php/
+ * @link https://developer.wordpress.org/advanced-administration/wordpress/wp-config/
  *
  * @package WordPress
  */
 
 // ** Database settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define( 'DB_NAME', 'dev3_localdev_db' );
+define( 'DB_NAME', 'dev4_localdev_db' );
 
 /** Database username */
 define( 'DB_USER', 'wordpress' );
@@ -48,14 +48,14 @@ define( 'DB_COLLATE', '' );
  *
  * @since 2.6.0
  */
-define( 'AUTH_KEY',         '96fde31a74aa571f8b5264395f664358444c2b1f8ea0afc716070b2c5b531216' );
-define( 'SECURE_AUTH_KEY',  '2789a3067f415365fffb9bd7d7dac2b7c6949ae881c3c989555e443428cb1488' );
-define( 'LOGGED_IN_KEY',    '1babaee5aa6a71066d445665a9fc4ccf04831e6cdd224c7918464fd163721910' );
-define( 'NONCE_KEY',        '6e946a471b9b9386b3bfb9b89e9708e78eea783b36de82776b2d36e70e66cf0d' );
-define( 'AUTH_SALT',        'eb0e06b30bc0c87ad34acd70dac33a2bb808532fc380a8a3112ad99a1cb21d81' );
-define( 'SECURE_AUTH_SALT', '1423825c640ce4079af605a369c9787127d73e5305bd99dffac613589ad1aa66' );
-define( 'LOGGED_IN_SALT',   'e49d57e7076f7c7f5b40c9a87d57823a93588420078cab7fcf1dc356561f74b8' );
-define( 'NONCE_SALT',       '51c1b70d4f5178806329e2d7da1c648daa1b3e28befb87a45068310a73ac34ce' );
+define( 'AUTH_KEY',         '0257ea9d116b37c1b2cac9ab9ff2b5c667c6638ccdd1e17f6eea958151b6866a' );
+define( 'SECURE_AUTH_KEY',  'a5b2eb4b8652b2033f051bdbd2cfbd30f8226b0b5c7b373f10e1a725cf2b19e9' );
+define( 'LOGGED_IN_KEY',    '07363da5f5ec8672299ad82d2891d947c26d07a0276c3bd7a7ecc05b879a04ae' );
+define( 'NONCE_KEY',        '500d0918dcaf8e00400eecb41f679d850678a73c9a6f477c31f6174bdb25ebb6' );
+define( 'AUTH_SALT',        '29a33bcf8fc9fb202ee3eb7b5deeca301e5d6e676d03c0a7a0448e6e6f0cee58' );
+define( 'SECURE_AUTH_SALT', '633dd4c591787ae46fe6d4aea40c249a183e70f727d6699c908f6d651d676935' );
+define( 'LOGGED_IN_SALT',   '13e081720b89939b59f8ed2b16e84e1293eff9001cd80f5774dd586a2f566947' );
+define( 'NONCE_SALT',       '64e4e5fd808985e47c655baad54ecf01e8df9530b995ef0bdc2f69ef108097de' );
 
 /**#@-*/
 
@@ -77,7 +77,7 @@ $table_prefix = 'wp_';
  * For information on other constants that can be used for debugging,
  * visit the documentation.
  *
- * @link https://wordpress.org/documentation/article/debugging-in-wordpress/
+ * @link https://developer.wordpress.org/advanced-administration/debug/debug-wordpress/
  */
 define( 'WP_DEBUG', false );
 

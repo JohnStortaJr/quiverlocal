@@ -5,6 +5,8 @@ import json
 import os
 import subprocess
 import random
+import secrets
+import shutil
 from smlib.format import *
 
 quiverHome = os.getcwd()
@@ -55,63 +57,63 @@ def writeSiteConfig(siteName, siteDictionary):
         outFile.write("\n")
 
 
-testSite = {
-    "site": {
-        "name": "localdev04"
-    },
-    "user": {
-        "name": os.environ.get("USER"),
-        "home": os.environ.get("HOME")
-    },
-    "domain": {
-        "name": "localdev04.local",
-        "home": "",
-        "config": ""
-    },
-    "database": {
-        "name": "localdev04_db",
-        "user": "wordpress",
-        "password": "start123"
-    },
-    "apache": {
-        "root": "/etc/apache2",
-        "log": "/var/log/apache2",
-        "config": ""
-    },
-    "import": {
-        "path": "",
-        "file": "",
-        "data": ""
-    },
-    "certificate": {
-        "path": "",
-        "name": "MyCert",
-        "duration": 365,
-        "key_file": "",
-        "cert_file": "",
-        "cert_request": "",
-        "cert_config": "",
-        "root_key_file": "",
-        "root_cert_file": ""
+def layerdDict():
+    testSite = {
+        "site": {
+            "name": "localdev04"
+        },
+        "user": {
+            "name": os.environ.get("USER"),
+            "home": os.environ.get("HOME")
+        },
+        "domain": {
+            "name": "localdev04.local",
+            "home": "",
+            "config": ""
+        },
+        "database": {
+            "name": "localdev04_db",
+            "user": "wordpress",
+            "password": "start123"
+        },
+        "apache": {
+            "root": "/etc/apache2",
+            "log": "/var/log/apache2",
+            "config": ""
+        },
+        "import": {
+            "path": "",
+            "file": "",
+            "data": ""
+        },
+        "certificate": {
+            "path": "",
+            "name": "MyCert",
+            "duration": 365,
+            "key_file": "",
+            "cert_file": "",
+            "cert_request": "",
+            "cert_config": "",
+            "root_key_file": "",
+            "root_cert_file": ""
+        }
     }
-}
 
-testSite["domain"]["home"] = testSite["user"]["home"] + "/domains/" + testSite["domain"]["name"]
-testSite["domain"]["config"] = testSite["domain"]["home"] + "/domains/config/" + testSite["domain"]["name"] + ".core"
-testSite["apache"]["config"] = testSite["apache"]["root"] + "/sites-available/" + testSite["domain"]["name"] + ".conf"
-testSite["import"]["path"] = testSite["user"]["home"] + "/exports"
-testSite["import"]["file"] = testSite["user"]["home"] + "/exports/NOFILE"
-testSite["import"]["data"] = testSite["user"]["home"] + "/exports/NODATA"
-testSite["certificate"]["path"] = testSite["user"]["home"] + "/certificates"
-testSite["certificate"]["key_file"] = testSite["user"]["home"] + "/certificates/myCert.key"
-testSite["certificate"]["cert_file"] = testSite["user"]["home"] + "/certificates/myCert.crt"
-testSite["certificate"]["cert_request"] = testSite["user"]["home"] + "/certificates/myCert.csr"
-testSite["certificate"]["cert_config"] = testSite["user"]["home"] + "/certificates/myCert.ext"
-testSite["certificate"]["root_key_file"] = testSite["user"]["home"] + "/certificates/myCA.key"
-testSite["certificate"]["root_cert_file"] = testSite["user"]["home"] + "/certificates/myCA.pem"
+    testSite["domain"]["home"] = testSite["user"]["home"] + "/domains/" + testSite["domain"]["name"]
+    testSite["domain"]["config"] = testSite["domain"]["home"] + "/domains/config/" + testSite["domain"]["name"] + ".core"
+    testSite["apache"]["config"] = testSite["apache"]["root"] + "/sites-available/" + testSite["domain"]["name"] + ".conf"
+    testSite["import"]["path"] = testSite["user"]["home"] + "/exports"
+    testSite["import"]["file"] = testSite["user"]["home"] + "/exports/NOFILE"
+    testSite["import"]["data"] = testSite["user"]["home"] + "/exports/NODATA"
+    testSite["certificate"]["path"] = testSite["user"]["home"] + "/certificates"
+    testSite["certificate"]["key_file"] = testSite["user"]["home"] + "/certificates/myCert.key"
+    testSite["certificate"]["cert_file"] = testSite["user"]["home"] + "/certificates/myCert.crt"
+    testSite["certificate"]["cert_request"] = testSite["user"]["home"] + "/certificates/myCert.csr"
+    testSite["certificate"]["cert_config"] = testSite["user"]["home"] + "/certificates/myCert.ext"
+    testSite["certificate"]["root_key_file"] = testSite["user"]["home"] + "/certificates/myCA.key"
+    testSite["certificate"]["root_cert_file"] = testSite["user"]["home"] + "/certificates/myCA.pem"
 
-
-print(json.dumps(testSite, indent=4))
+    print(json.dumps(testSite, indent=4))
 
 
 
@@ -201,48 +203,162 @@ currentSite = {
 #print(commandString)
 #runCommand(commandString, True)
 
-print(color.BLACK + "This is a color test string " + color.END + " >> BLACK")
-print(color.RED + "This is a color test string " + color.END + " >> RED")
-print(color.GREEN + "This is a color test string " + color.END + " >> GREEN")
-print(color.YELLOW + "This is a color test string " + color.END + " >> YELLOW")
-print(color.BLUE + "This is a color test string " + color.END + " >> BLUE")
-print(color.MAGENTA + "This is a color test string " + color.END + " >> MAGENTA")
-print(color.CYAN + "This is a color test string " + color.END + " >> CYAN")
-print(color.WHITE + "This is a color test string " + color.END + " >> WHITE")
-print("")
-print(color.BBLACK + "This is a color test string " + color.END + " >> BBLACK")
-print(color.BRED + "This is a color test string " + color.END + " >> BRED")
-print(color.BGREEN + "This is a color test string " + color.END + " >> BGREEN")
-print(color.BYELLOW + "This is a color test string " + color.END + " >> BYELLOW")
-print(color.BBLUE + "This is a color test string " + color.END + " >> BBLUE")
-print(color.BMAGENTA + "This is a color test string " + color.END + " >> BMAGENTA")
-print(color.BCYAN + "This is a color test string " + color.END + " >> BCYAN")
-print(color.BWHITE + "This is a color test string " + color.END + " >> BWHITE")
+def printColors():
+    print(color.BLACK + "This is a color test string " + color.END + " >> BLACK")
+    print(color.RED + "This is a color test string " + color.END + " >> RED")
+    print(color.GREEN + "This is a color test string " + color.END + " >> GREEN")
+    print(color.YELLOW + "This is a color test string " + color.END + " >> YELLOW")
+    print(color.BLUE + "This is a color test string " + color.END + " >> BLUE")
+    print(color.MAGENTA + "This is a color test string " + color.END + " >> MAGENTA")
+    print(color.CYAN + "This is a color test string " + color.END + " >> CYAN")
+    print(color.WHITE + "This is a color test string " + color.END + " >> WHITE")
+    print("")
+    print(color.BBLACK + "This is a color test string " + color.END + " >> BBLACK")
+    print(color.BRED + "This is a color test string " + color.END + " >> BRED")
+    print(color.BGREEN + "This is a color test string " + color.END + " >> BGREEN")
+    print(color.BYELLOW + "This is a color test string " + color.END + " >> BYELLOW")
+    print(color.BBLUE + "This is a color test string " + color.END + " >> BBLUE")
+    print(color.BMAGENTA + "This is a color test string " + color.END + " >> BMAGENTA")
+    print(color.BCYAN + "This is a color test string " + color.END + " >> BCYAN")
+    print(color.BWHITE + "This is a color test string " + color.END + " >> BWHITE")
 
-print("")
-print(background.BLACK + "This is a background color test string " + background.END + " >> BLACK")
-print(background.RED + "This is a background color test string " + background.END + " >> RED")
-print(background.GREEN + "This is a background color test string " + background.END + " >> GREEN")
-print(background.YELLOW + "This is a background color test string " + background.END + " >> YELLOW")
-print(background.BLUE + "This is a background color test string " + background.END + " >> BLUE")
-print(background.MAGENTA + "This is a background color test string " + background.END + " >> MAGENTA")
-print(background.CYAN + "This is a background color test string " + background.END + " >> CYAN")
-print(background.WHITE + "This is a background color test string " + background.END + " >> WHITE")
-print("")
-print(background.BBLACK + "This is a background color test string " + background.END + " >> BBLACK")
-print(background.BRED + "This is a background color test string " + background.END + " >> BRED")
-print(background.BGREEN + "This is a background color test string " + background.END + " >> BGREEN")
-print(background.BYELLOW + "This is a background color test string " + background.END + " >> BYELLOW")
-print(background.BBLUE + "This is a background color test string " + background.END + " >> BBLUE")
-print(background.BMAGENTA + "This is a background color test string " + background.END + " >> BMAGENTA")
-print(background.BCYAN + "This is a background color test string " + background.END + " >> BCYAN")
-print(background.BWHITE + "This is a background color test string " + background.END + " >> BWHITE")
+    print("")
+    print(background.BLACK + "This is a background color test string " + background.END + " >> BLACK")
+    print(background.RED + "This is a background color test string " + background.END + " >> RED")
+    print(background.GREEN + "This is a background color test string " + background.END + " >> GREEN")
+    print(background.YELLOW + "This is a background color test string " + background.END + " >> YELLOW")
+    print(background.BLUE + "This is a background color test string " + background.END + " >> BLUE")
+    print(background.MAGENTA + "This is a background color test string " + background.END + " >> MAGENTA")
+    print(background.CYAN + "This is a background color test string " + background.END + " >> CYAN")
+    print(background.WHITE + "This is a background color test string " + background.END + " >> WHITE")
+    print("")
+    print(background.BBLACK + "This is a background color test string " + background.END + " >> BBLACK")
+    print(background.BRED + "This is a background color test string " + background.END + " >> BRED")
+    print(background.BGREEN + "This is a background color test string " + background.END + " >> BGREEN")
+    print(background.BYELLOW + "This is a background color test string " + background.END + " >> BYELLOW")
+    print(background.BBLUE + "This is a background color test string " + background.END + " >> BBLUE")
+    print(background.BMAGENTA + "This is a background color test string " + background.END + " >> BMAGENTA")
+    print(background.BCYAN + "This is a background color test string " + background.END + " >> BCYAN")
+    print(background.BWHITE + "This is a background color test string " + background.END + " >> BWHITE")
 
-print("")
-print(style.BOLD + "This is a style test string " + style.END + " >> BOLD")
-print(style.FAINT + "This is a style test string " + style.END + " >> FAINT")
-print(style.ITALIC + "This is a style test string " + style.END + " >> ITALIC")
-print(style.UNDERLINE + "This is a style test string " + style.END + " >> UNDERLINE")
-print(style.BLINK + "This is a style test string " + style.END + " >> BLINK")
-print(style.NEGATIVE + "This is a style test string " + style.END + " >> NEGATIVE")
-print(style.CROSSED + "This is a style test string " + style.END + " >> CROSSED")
+    print("")
+    print(style.BOLD + "This is a style test string " + style.END + " >> BOLD")
+    print(style.FAINT + "This is a style test string " + style.END + " >> FAINT")
+    print(style.ITALIC + "This is a style test string " + style.END + " >> ITALIC")
+    print(style.UNDERLINE + "This is a style test string " + style.END + " >> UNDERLINE")
+    print(style.BLINK + "This is a style test string " + style.END + " >> BLINK")
+    print(style.NEGATIVE + "This is a style test string " + style.END + " >> NEGATIVE")
+    print(style.CROSSED + "This is a style test string " + style.END + " >> CROSSED")
+
+
+def runTestCommand(commandString="whoami", asRoot=False):
+    commandList = commandString.split()
+    print(commandString)
+    print(commandList)
+
+    # Clear cached sudo access (this is for testing purposes only)
+    subprocess.run(["sudo", "-k"], capture_output=True, text=True)
+
+#    localPID = random.randint(111111, 999999)
+#    tempScriptName = quiverHome + "/tmp/" + "tScript" + str(localPID)
+
+    # Create script file and write commands to be executed
+#    with open(tempScriptName, "a") as outFile:
+#        outFile.write("#!/usr/bin/bash\n")
+#        outFile.write(commandString + "\n")
+
+    # Make the script executable
+#    subprocess.run(["chmod", "755", tempScriptName], capture_output=True, text=True)
+
+    # Add sudo as the first element if the command is to be run as root
+    if asRoot:
+        commandList.insert(0, "sudo")
+
+    # Delete the temporary script
+#    subprocess.run(["rm", tempScriptName], capture_output=True, text=True)
+
+    tempScriptResult = subprocess.run(commandList, capture_output=True, text=True)
+    print("e--->" + tempScriptResult.stderr)
+    print("##################################")
+    print("o--->" + tempScriptResult.stdout)
+    
+    print("return-->" + str(tempScriptResult.returncode))
+
+    # If stderr contains anything, print it immediately
+#    if tempScriptResult.stderr.strip(): print("e:" + tempScriptResult.stderr)
+
+    # Need to see if I canadd a line to the script to capture and return the exit code. And then use that here to determine success/failure
+
+    # Return the stdout from the execution
+#    return tempScriptResult.stdout.strip()
+
+def captureTablePrefix(configPath):
+    with open(configPath, 'r') as inFile:
+        # Read all lines form the file into a list
+        configLines = inFile.readlines()
+
+        # Check each line until finding table_prefix and then return that value
+        for i in configLines:
+            if "table_prefix" in i:
+                foundLine = i
+                break
+        
+        print("Prefix: >>>" + foundLine.split("=")[1][2:-4] + "<<<")
+        
+
+### Finds a pattern in a line of a given file and replaces the text. It can replace the entire line or just the targetText
+def replaceFileText(targetFile, targetText, newText, wholeLine=False):
+    with open(targetFile, 'r') as inFile:
+        # Read all lines form the file into a list
+        configLines = inFile.readlines()
+
+        # Check each line until finding the value that needs to be replaced
+        lineCounter = 0
+        while lineCounter < len(configLines):
+            if targetText in configLines[lineCounter]:
+                if wholeLine:
+                    # Replace the entire line
+                    configLines[lineCounter] = newText
+                else:
+                    # Only swap the targetText
+                    configLines[lineCounter] = configLines[lineCounter].replace(targetText, newText)
+            
+            lineCounter += 1
+
+    # Write out the config file with the updated line(s)
+    with open(targetFile, 'w') as outFile:
+        outFile.writelines(configLines)
+
+
+#printColors()
+
+testVar = "/etc/apach2/sites-available/dev3.localdev.conf"
+quiverHome = "/home/jstorta/projects/quiverlocal"
+tempFolder = quiverHome + "/tmp"
+testDomainHome = "/home/jstorta/domains/dev1.johnstortajr.local"
+domainRoot = "/home/jstorta/projects/quiverlocal/tmp/test"
+domainName = "dev5.newdomain"
+domainHome = domainRoot + "/" + domainName
+#print(runTestCommand("apt --yes install apache2 ghostscript libapache2-mod-php mysql-server php php-bcmath php-curl php-imagick php-intl php-json php-mbstring php-mysql php-xml php-zip", True))
+#print(runTestCommand("cp " + quiverHome + "/base/default_https.conf " + quiverHome + "/tmp/thttpsconf"))
+#print(runTestCommand("sed -i s|__CORECONFIG__|" + testVar + "|g " + quiverHome + "/tmp/thttpsconf"))
+
+#### This will download the latest WordPress files and extract them to a domain directory (stripping the root folder from the download)
+#print(runTestCommand("curl --output-dir " + tempFolder + " --create-dirs -O https://wordpress.org/latest.tar.gz"))
+#print(runTestCommand("mkdir -p " + domainHome))
+#print(runTestCommand("tar -zxvf " + tempFolder + "/latest.tar.gz" + " -C " + domainHome + " --strip-components=1"))
+
+#print(runTestCommand("systemctl restart apache2", True))
+
+#### captureTablePrefix(testDomainHome + "/wp-config.php")
+
+# Replace the entire line with a new value
+NEW_SECURE_AUTH_KEY="define( 'SECURE_AUTH_KEY',  '" + secrets.token_urlsafe(32) + "' );\n"
+#print(runTestCommand("cp " + quiverHome + "/tmp/test/dev5.newdomain/wp-config-sample.php " + quiverHome + "/tmp/twpconf"))
+shutil.copyfile(quiverHome + "/tmp/test/dev5.newdomain/wp-config-sample.php", quiverHome + "/tmp/twpconf")
+replaceConfigLine(quiverHome + "/tmp/twpconf", "SECURE_AUTH_KEY", NEW_SECURE_AUTH_KEY, True), 
+
+# Replace the search string with the new text (leaving the rest of the line unchanged)
+shutil.copyfile(quiverHome + "/tmp" + "/envvars", quiverHome + "/tmp/tenvvars")
+replaceConfigLine(quiverHome + "/tmp/tenvvars", "APACHE_RUN_USER=www-data", "APACHE_RUN_USER=" + "jstorta"), 
+replaceConfigLine(quiverHome + "/tmp/tenvvars", "APACHE_RUN_GROUP=www-data", "APACHE_RUN_GROUP=" + "jstorta"), 

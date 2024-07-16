@@ -46,8 +46,6 @@ def mainMenu():
         case 5:
             print("Delete Site")
             deleteSite()
-        case 20:
-            getTablePrefixes()
         case _:
             print("")
             print(background.BYELLOW + "Unknown selection" + background.END)

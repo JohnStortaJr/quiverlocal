@@ -79,8 +79,8 @@ def getInput(promptString, requireInt=False):
 
 # Build a temporary bash script to run a linux command
 # For use in cases where there is not a clean python-native way to perform a task
-def runCommand(commandString="whoami", asRoot=False):
-    #print(commandString)
+def oldRunCommand(commandString="whoami", asRoot=False):
+    print(commandString)
     localPID = random.randint(111111, 999999)
     tempScriptName = quiverHome + "/tmp/" + "tScript" + str(localPID)
 
@@ -99,13 +99,63 @@ def runCommand(commandString="whoami", asRoot=False):
         tempScriptResult = subprocess.run([tempScriptName], capture_output=True, text=True)
 
     # Delete the temporary script
-    subprocess.run(["rm", tempScriptName], capture_output=True, text=True)
+    #subprocess.run(["rm", tempScriptName], capture_output=True, text=True)
 
     # If stderr contains anything, print it immediately
     if tempScriptResult.stderr.strip(): print("e:" + tempScriptResult.stderr)
 
+    # Need to see if I can add a line to the script to capture and return the exit code. And then use that here to determine success/failure
+
     # Return the stdout from the execution
     return tempScriptResult.stdout.strip()
+
+
+def runCommand(commandString="whoami", asRoot=False):
+    commandList = commandString.split()
+    print(commandString)
+
+    # Clear cached sudo access (this is for testing purposes only)
+    #subprocess.run(["sudo", "-k"], capture_output=True, text=True)
+
+    # Add sudo as the first element if the command is to be run as root
+    if asRoot:
+        commandList.insert(0, "sudo")
+    #print(commandList)
+
+    tempScriptResult = subprocess.run(commandList, capture_output=True, text=True)
+    print("e--->" + tempScriptResult.stderr)
+    #print("##################################")
+    #print("o--->" + tempScriptResult.stdout)
+    
+    # If stderr contains anything, print it immediately
+    #if tempScriptResult.stderr.strip(): print("e:" + tempScriptResult.stderr)
+
+    # Return the stdout from the execution
+    return tempScriptResult.stdout.strip()
+
+
+### Finds a pattern in a line of a given file and replaces the text. It can replace the entire line or just the targetText
+def replaceFileText(targetFile, targetText, newText, wholeLine=False):
+    with open(targetFile, 'r') as inFile:
+        # Read all lines form the file into a list
+        configLines = inFile.readlines()
+
+        # Check each line until finding the value that needs to be replaced
+        lineCounter = 0
+        while lineCounter < len(configLines):
+            if targetText in configLines[lineCounter]:
+                if wholeLine:
+                    # Replace the entire line
+                    configLines[lineCounter] = newText + "\n"
+                else:
+                    # Only swap the targetText
+                    configLines[lineCounter] = configLines[lineCounter].replace(targetText, newText)
+            
+            lineCounter += 1
+
+    # Write out the config file with the updated line(s)
+    with open(targetFile, 'w') as outFile:
+        outFile.writelines(configLines)
 
 
 

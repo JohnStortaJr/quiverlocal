@@ -86,7 +86,7 @@ def deleteSiteConfiguration(targetSite):
     runCommand("rm -rf " + targetSite["domainHome"])
 
     # Delete the database
-    runCommand("mysql -u root -e 'DROP DATABASE " + targetSite["dbName"] + ";'", True)
+    oldRunCommand("mysql -u root -e 'DROP DATABASE " + targetSite["dbName"] + ";'", True)
 
     # Delete the sitedb json file
     runCommand("rm " + quiverHome + "/sitedb/" + targetSite["siteName"] + ".json")

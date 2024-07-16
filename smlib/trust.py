@@ -265,15 +265,18 @@ def createNewCertificates(targetSite):
 
 
 def addCertificate(targetSite):
+    print(style.BOLD + "►►► Adding SSL certificate paths to the Apache configuration" + style.END)
     # The config will always start with the default configuration
     # Any user customizations will be overwritten
     shutil.copyfile(quiverHome + "/base/default_https.conf", quiverHome + "/tmp/thttpsconf")
 
-    print(style.BOLD + "►►► Adding SSL certificate paths to the Apache configuration" + style.END)
+    replaceFileText(quiverHome + "/tmp/thttpsconf", "__CORECONFIG__", targetSite["domainConfig"])
+    replaceFileText(quiverHome + "/tmp/thttpsconf", "__CERTKEYFILE__", targetSite["certKey"])
+    replaceFileText(quiverHome + "/tmp/thttpsconf", "__CERTFILE__", targetSite["certificate"])
 
-    runCommand("sed -i \"s|__CORECONFIG__|" + targetSite["domainConfig"] + "|g\" " + quiverHome + "/tmp/thttpsconf")
-    runCommand("sed -i \"s|__CERTKEYFILE__|" + targetSite["certKey"] + "|g\" " + quiverHome + "/tmp/thttpsconf")
-    runCommand("sed -i \"s|__CERTFILE__|" + targetSite["certificate"] + "|g\" " + quiverHome + "/tmp/thttpsconf")
+    #runCommand("sed -i \"s|__CORECONFIG__|" + targetSite["domainConfig"] + "|g\" " + quiverHome + "/tmp/thttpsconf")
+    #runCommand("sed -i \"s|__CERTKEYFILE__|" + targetSite["certKey"] + "|g\" " + quiverHome + "/tmp/thttpsconf")
+    #runCommand("sed -i \"s|__CERTFILE__|" + targetSite["certificate"] + "|g\" " + quiverHome + "/tmp/thttpsconf")
 
     runCommand("mv " + quiverHome + "/tmp/thttpsconf " + targetSite["apacheConfig"], True)
     runCommand("chown root: " + targetSite["apacheConfig"], True)
@@ -286,13 +289,14 @@ def addCertificate(targetSite):
 
 
 def removeCertificate(targetSite):
+    print(style.BOLD + "►►► Removing SSL certificate paths from the Apache configuration" + style.END)
     # The config will always start with the default configuration
     # Any user customizations will be overwritten
     shutil.copyfile(quiverHome + "/base/default_http.conf", quiverHome + "/tmp/thttpconf")
 
-    print(style.BOLD + "►►► Removing SSL certificate paths from the Apache configuration" + style.END)
+    replaceFileText(quiverHome + "/tmp/thttpsconf", "__CORECONFIG__", targetSite["domainConfig"])
 
-    runCommand("sed -i \"s|__CORECONFIG__|" + targetSite["domainConfig"] + "|g\" " + quiverHome + "/tmp/thttpconf")
+    #runCommand("sed -i \"s|__CORECONFIG__|" + targetSite["domainConfig"] + "|g\" " + quiverHome + "/tmp/thttpconf")
 
     runCommand("mv " + quiverHome + "/tmp/thttpconf " + targetSite["apacheConfig"], True)
     runCommand("chown root: " + targetSite["apacheConfig"], True)
