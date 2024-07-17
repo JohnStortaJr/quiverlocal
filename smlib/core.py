@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import os
+import sys
 import subprocess
 import random
 from smlib.format import *
@@ -9,6 +10,7 @@ from smlib.format import *
 # Quiver directories
 quiverHome = os.getcwd()
 quiverDB = quiverHome + "/sitedb/"
+pythonHome = sys.executable
 
 siteTemplate = {
     "siteName": "site99",
@@ -163,6 +165,7 @@ def replaceFileText(targetFile, targetText, newText, wholeLine=False):
 def installDependencies():
     print(style.BOLD + "Installing Dependencies..." + style.END)
     runCommand("apt --yes install apache2 ghostscript libapache2-mod-php mysql-server php php-bcmath php-curl php-imagick php-intl php-json php-mbstring php-mysql php-xml php-zip", True)
+    runCommand("apt --yes install python3-pip", True)
 
 
 def restartApache():

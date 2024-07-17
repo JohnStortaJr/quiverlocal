@@ -7,15 +7,16 @@ import subprocess
 import random
 import secrets
 import shutil
+import mysql.connector
 from smlib.format import *
 
 quiverHome = os.getcwd()
 userHome = "/home/jstorta"
 
-def runCommand(commandString="whoami", asRoot=False):
+def oldRunCommand(commandString="whoami", asRoot=False):
     localPID = random.randint(111111, 999999)
     tempScriptName = quiverHome + "/tmp/" + "tScript" + str(localPID)
-    #print(tempScriptName + "-" + commandString)
+    print(tempScriptName + "  >>>  " + commandString)
 
     # Create script file and write commands to be executed
     with open(tempScriptName, "a") as outFile:
@@ -25,6 +26,8 @@ def runCommand(commandString="whoami", asRoot=False):
     # Make the script executable
     subprocess.run(["chmod", "755", tempScriptName], capture_output=True, text=True)
 
+    print(subprocess.run(["cat", tempScriptName], capture_output=True, text=True).stdout)
+
     # Run the script and display the output (end='' removes the blank line at the end)
     if asRoot:
         print("Running as ROOT")
@@ -32,6 +35,12 @@ def runCommand(commandString="whoami", asRoot=False):
     else:
         print("Running as User")
         tempScriptResult = subprocess.run([tempScriptName], capture_output=True, text=True)
+
+    print("e--->" + tempScriptResult.stderr)
+    print("##################################")
+    print("o--->" + tempScriptResult.stdout)
+    
+    print("return-->" + str(tempScriptResult.returncode))
 
     # Delete the temporary script
     
@@ -251,13 +260,13 @@ def printColors():
     print(style.CROSSED + "This is a style test string " + style.END + " >> CROSSED")
 
 
-def runTestCommand(commandString="whoami", asRoot=False):
+def runCommand(commandString="whoami", asRoot=False):
     commandList = commandString.split()
     print(commandString)
     print(commandList)
 
     # Clear cached sudo access (this is for testing purposes only)
-    subprocess.run(["sudo", "-k"], capture_output=True, text=True)
+    #subprocess.run(["sudo", "-k"], capture_output=True, text=True)
 
 #    localPID = random.randint(111111, 999999)
 #    tempScriptName = quiverHome + "/tmp/" + "tScript" + str(localPID)
@@ -353,12 +362,43 @@ domainHome = domainRoot + "/" + domainName
 #### captureTablePrefix(testDomainHome + "/wp-config.php")
 
 # Replace the entire line with a new value
-NEW_SECURE_AUTH_KEY="define( 'SECURE_AUTH_KEY',  '" + secrets.token_urlsafe(32) + "' );\n"
+#NEW_SECURE_AUTH_KEY="define( 'SECURE_AUTH_KEY',  '" + secrets.token_urlsafe(32) + "' );\n"
 #print(runTestCommand("cp " + quiverHome + "/tmp/test/dev5.newdomain/wp-config-sample.php " + quiverHome + "/tmp/twpconf"))
-shutil.copyfile(quiverHome + "/tmp/test/dev5.newdomain/wp-config-sample.php", quiverHome + "/tmp/twpconf")
-replaceConfigLine(quiverHome + "/tmp/twpconf", "SECURE_AUTH_KEY", NEW_SECURE_AUTH_KEY, True), 
+#shutil.copyfile(quiverHome + "/tmp/test/dev5.newdomain/wp-config-sample.php", quiverHome + "/tmp/twpconf")
+#replaceFileText(quiverHome + "/tmp/twpconf", "SECURE_AUTH_KEY", NEW_SECURE_AUTH_KEY, True), 
 
 # Replace the search string with the new text (leaving the rest of the line unchanged)
-shutil.copyfile(quiverHome + "/tmp" + "/envvars", quiverHome + "/tmp/tenvvars")
-replaceConfigLine(quiverHome + "/tmp/tenvvars", "APACHE_RUN_USER=www-data", "APACHE_RUN_USER=" + "jstorta"), 
-replaceConfigLine(quiverHome + "/tmp/tenvvars", "APACHE_RUN_GROUP=www-data", "APACHE_RUN_GROUP=" + "jstorta"), 
+#shutil.copyfile(quiverHome + "/tmp" + "/envvars", quiverHome + "/tmp/tenvvars")
+#replaceFileText(quiverHome + "/tmp/tenvvars", "APACHE_RUN_USER=www-data", "APACHE_RUN_USER=" + "jstorta"), 
+#replaceFileText(quiverHome + "/tmp/tenvvars", "APACHE_RUN_GROUP=www-data", "APACHE_RUN_GROUP=" + "jstorta"), 
+
+# Need to test MySQL commands. They work with my tempscript, but not with direct
+
+#print(">>> Using tScript")
+#oldRunCommand("systemctl restart apache2", True)
+#oldRunCommand("mysql -u root < /home/jstorta/projects/quiverlocal/tmp/tdbconf1", True)
+#print("")
+#print(">>> Using direct call")
+#runCommand("systemctl restart apache2", True)
+#runCommand("mysql -u root < /home/jstorta/projects/quiverlocal/tmp/tdbconf2", True)
+
+#pythonExec = sys.executable
+#print(">>>" + pythonExec)
+
+#runCommand("apt --yes install python3-pip", True)
+
+# Need to see about running in a virtual environment
+#runCommand(pythonExec + " -m pip install mysql-connector-python", True)
+
+#mydb = mysql.connector.connect(
+#  host="localhost",
+#  user="root",
+#  password="start123"
+#)
+
+
+
+#print(mydb)
+
+printColors()
+
