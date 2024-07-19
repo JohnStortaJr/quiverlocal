@@ -74,15 +74,15 @@ function createQuiverDB() {
     fi
 
     if test ! -d ${QUIVER_DB}/sites; then
-        mkdir $QUIVER_DB
+        mkdir $QUIVER_DB/sites
     fi
 
     if test ! -d ${QUIVER_DB}/imports; then
-        mkdir $QUIVER_DB
+        mkdir $QUIVER_DB/imports
     fi
 
     if test ! -d ${QUIVER_DB}/certificates; then
-        mkdir $QUIVER_DB
+        mkdir $QUIVER_DB/certificates
     fi
 }
 
