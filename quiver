@@ -3,14 +3,22 @@
 bold=$(tput bold)
 normal=$(tput sgr0)
 
-QUIVER_ROOT=`dirname "$(realpath $0)"`
 USER=`whoami`
 USER_HOME=/home/$USER
+QUIVER_ROOT=`dirname "$(realpath $0)"`
+QUIVER_DB="${USER_HOME}/quiverdb"
 APACHE_ROOT=/etc/apache2
 PYTHON_EXEC=`which python3`
 
 BACKGROUND_BBLUE="\u001b[44;1m"
+BACKGROUND_BYELLOW="\u001b[43;1m"
 BACKGROUND_END="\u001b[0m"
+
+if test ! -d ${QUIVER_DB}; then
+    printf "${BACKGROUND_BYELLOW} Quiver Database not found ${BACKGROUND_END} \n\n"
+    printf "Run ${bold} quiversetup ${normal} to initialize the application\n\n"
+    exit 1
+fi
 
 source .quiverenv/bin/activate
 
