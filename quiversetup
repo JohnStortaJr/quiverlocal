@@ -12,17 +12,6 @@ PYTHON_EXEC=`which python3`
 BACKGROUND_BBLUE="\u001b[44;1m"
 BACKGROUND_END="\u001b[0m"
 
-function createVirtualEnv() {
-    echo ""
-    echo "${bold}►►► Creating Quiver Virtual Environment${normal}"
-
-    pip3 install virtualenv
-    echo ""
-
-    virtualenv -p $PYTHON_EXEC .quiverenv
-    echo ""
-}
-
 ### Install any of the required packages that are missing
 function installRequiredPackages() {
     echo "${bold}►►► Installing Apache...${normal}"
@@ -39,6 +28,18 @@ function installRequiredPackages() {
 
     echo "${bold}►►► Installing MySQL...${normal}"
     sudo apt --yes install mysql-server
+    echo ""
+}
+
+
+function createVirtualEnv() {
+    echo ""
+    echo "${bold}►►► Creating Quiver Virtual Environment${normal}"
+
+    python3 -m pip install virtualenv
+    echo ""
+
+    virtualenv -p $PYTHON_EXEC .quiverenv
     echo ""
 }
 
