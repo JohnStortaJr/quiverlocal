@@ -29,6 +29,10 @@ function installRequiredPackages() {
     echo "${bold}►►► Installing MySQL...${normal}"
     sudo apt --yes install mysql-server
     echo ""
+
+    echo "${bold}►►► Installing VirtualEnv...${normal}"
+    sudo apt --yes install python3-virtualenv
+    echo ""
 }
 
 
@@ -36,8 +40,8 @@ function createVirtualEnv() {
     echo ""
     echo "${bold}►►► Creating Quiver Virtual Environment${normal}"
 
-    python3 -m pip install virtualenv
-    echo ""
+    #python3 -m pip install virtualenv
+    #echo ""
 
     virtualenv -p $PYTHON_EXEC .quiverenv
     echo ""
