@@ -8,8 +8,9 @@ from smlib.format import *
 #from smlib.info import *
 
 # Quiver directories
+userHome = os.environ.get("HOME")
 quiverHome = os.getcwd()
-quiverDB = quiverHome + "/sitedb/"
+quiverDB = userHome + "/quiverdb"
 pythonHome = sys.executable
 
 siteTemplate = {
@@ -48,8 +49,8 @@ siteTemplate["domainRoot"] = siteTemplate["userHome"] + "/domains"
 siteTemplate["domainHome"] = siteTemplate["domainRoot"] + "/" + siteTemplate["domainName"]
 siteTemplate["domainConfig"] = siteTemplate["domainHome"] + "/domains/config/" + siteTemplate["domainName"] + ".core"
 siteTemplate["apacheConfig"] = siteTemplate["apacheHome"] + "/sites-available/" + siteTemplate["domainName"] + ".conf"
-siteTemplate["importPath"] = siteTemplate["userHome"] + "/exports"
-siteTemplate["certPath"] = siteTemplate["userHome"] + "/certificates/"
+siteTemplate["importPath"] = quiverDB + "/imports"
+siteTemplate["certPath"] = quiverDB + "/certificates"
 
 # Cleans troublesome characters from a string
 # There is a default list of characters, but a custom list can be provided

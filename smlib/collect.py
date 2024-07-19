@@ -98,7 +98,7 @@ def getDatabasePassword(targetSite):
 
 
 def getImportFile(targetSite):
-    defaultImportFile = targetSite["userHome"] + "/exports/" + targetSite["siteName"] + ".tar.gz"
+    defaultImportFile = quiverDB + "/imports/" + targetSite["siteName"] + ".tar.gz"
     targetSite["importFile"] = input(style.BOLD + "Import File [" + defaultImportFile + "]: " + style.END).strip()
     if not targetSite["importFile"]: targetSite["importFile"] = defaultImportFile
 
@@ -106,7 +106,7 @@ def getImportFile(targetSite):
 
 
 def getImportData(targetSite):
-    defaultImportData = targetSite["userHome"] + "/exports/" + targetSite["siteName"] + ".sql.gz"
+    defaultImportData = quiverDB + "/imports/" + targetSite["siteName"] + ".sql.gz"
     targetSite["importData"] = input(style.BOLD + "Import Data [" + defaultImportData + "]: " + style.END).strip()
     if not targetSite["importData"]: targetSite["importData"] = defaultImportData
 

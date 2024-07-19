@@ -13,7 +13,7 @@ def getSiteList(localDatabase = quiverDB):
         menuCounter = 0
         print(6 * "-" , "Installed Sites" , 6 * "-")
 
-        siteFileList = sorted(os.listdir(localDatabase))
+        siteFileList = sorted(os.listdir(localDatabase + "/sites"))
         siteList = []
         trustedList = []
 
@@ -21,7 +21,7 @@ def getSiteList(localDatabase = quiverDB):
             menuCounter += 1
 
             if i.endswith(".json"):
-                with open(quiverDB + i, 'r') as inFile:
+                with open(quiverDB + "/sites/" + i, 'r') as inFile:
                     currentSite = json.load(inFile)
                     siteList.append(currentSite["siteName"])
                     trustedList.append(currentSite["isTrusted"])
@@ -33,10 +33,16 @@ def getSiteList(localDatabase = quiverDB):
                     print(style.NEGATIVE + str(menuCounter) + style.END + " " + currentSite["siteName"] + color.BBLUE + trustMark + style.END)
 
         print("")
-        print(style.NEGATIVE + "0" + style.END + " Back")    
-        print(21 * "-")
 
-        selection = int(getInput("Which site details do you wish to see [0-" + str(menuCounter) + "]? ", True))
+        if menuCounter == 0:
+            print(background.BYELLOW + " No sites found " + background.END)
+            print(21 * "-")
+            selection = getInput("Hit " + style.BOLD + "Enter" + style.END + " to return to main menu... ")
+            return
+        else:
+            print(style.NEGATIVE + "0" + style.END + " Back")    
+            print(21 * "-")
+            selection = int(getInput("Which site details do you wish to see [0-" + str(menuCounter) + "]? ", True))
 
         if selection > len(siteList):
             print(background.BYELLOW + "Unknown selection" + background.END)
@@ -66,7 +72,7 @@ def updateTablePrefix(targetSite):
 
 def isUnique(key, value):
     # Get list of config files
-    siteFileList = sorted(os.listdir(quiverDB))
+    siteFileList = sorted(os.listdir(quiverDB + "/sites"))
 
     # Open each config file (end with json)
     for i in siteFileList:
@@ -86,7 +92,7 @@ def isUnique(key, value):
 ### Open JSON file named siteName.json in the sitedb directory
 ### and return a dictionary with the contents
 def readSiteConfig(siteName):
-    with open(quiverDB + siteName + ".json", 'r') as inFile:
+    with open(quiverDB + "/sites/" + siteName + ".json", 'r') as inFile:
         return json.load(inFile)
 
 
@@ -98,6 +104,6 @@ def displaySiteConfig(siteName):
 
 ### Write the provided dictionary to siteName.json in sitedb (overwriting any existing values)
 def writeSiteConfig(siteDictionary):
-    with open(quiverDB + siteDictionary["siteName"] + ".json", 'w') as outFile:
+    with open(quiverDB + "/sites/" + siteDictionary["siteName"] + ".json", 'w') as outFile:
         json.dump(siteDictionary, outFile, indent=4)
         outFile.write("\n")

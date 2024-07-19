@@ -13,14 +13,14 @@ def deleteSite(localDatabase = quiverDB):
         menuCounter = 0
         print(6 * "-" , "Installed Sites" , 6 * "-")
 
-        siteFileList = sorted(os.listdir(localDatabase))
+        siteFileList = sorted(os.listdir(localDatabase + "/sites"))
 
         siteList = []
         for i in siteFileList:
             menuCounter += 1
 
             if i.endswith(".json"):
-                with open(quiverDB + i, 'r') as inFile:
+                with open(quiverDB + "/sites/" + i, 'r') as inFile:
                     foundSite = json.load(inFile)
                     siteList.append(foundSite)
 
@@ -89,4 +89,4 @@ def deleteSiteConfiguration(targetSite):
     oldRunCommand("mysql -u root -e 'DROP DATABASE " + targetSite["dbName"] + ";'", True)
 
     # Delete the sitedb json file
-    runCommand("rm " + quiverHome + "/sitedb/" + targetSite["siteName"] + ".json")
+    runCommand("rm " + quiverDB + "/sites/" + targetSite["siteName"] + ".json")

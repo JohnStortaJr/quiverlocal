@@ -17,14 +17,14 @@ def trustSite(localDatabase = quiverDB):
         menuCounter = 0
         print(6 * "-" , "Installed Sites" , 6 * "-")
 
-        siteFileList = sorted(os.listdir(localDatabase))
+        siteFileList = sorted(os.listdir(localDatabase + "/sites"))
 
         siteList = []
         for i in siteFileList:
             menuCounter += 1
 
             if i.endswith(".json"):
-                with open(quiverDB + i, 'r') as inFile:
+                with open(quiverDB + "/sites/" + i, 'r') as inFile:
                     foundSite = json.load(inFile)
                     siteList.append(foundSite)
                     updateTablePrefix(foundSite)
@@ -97,14 +97,14 @@ def untrustSite(localDatabase = quiverDB):
         menuCounter = 0
         print(6 * "-" , "Installed Sites" , 6 * "-")
 
-        siteFileList = sorted(os.listdir(localDatabase))
+        siteFileList = sorted(os.listdir(localDatabase + "/sites"))
 
         siteList = []
         for i in siteFileList:
             menuCounter += 1
 
             if i.endswith(".json"):
-                with open(quiverDB + i, 'r') as inFile:
+                with open(quiverDB + "/sites/" + i, 'r') as inFile:
                     foundSite = json.load(inFile)
                     siteList.append(foundSite)
                     updateTablePrefix(foundSite)
@@ -169,7 +169,7 @@ def untrustSite(localDatabase = quiverDB):
 def getCertificate(targetSite):
     # Default to the current certificate key file, if there is one. Otherwise, assume siteName.key
     defaultCertKeyFile = targetSite["certKey"]
-    if not defaultCertKeyFile: defaultCertKeyFile = targetSite["userHome"] + "/certificates/" + targetSite["siteName"] + ".key"
+    if not defaultCertKeyFile: defaultCertKeyFile = quiverDB + "/certificates/" + targetSite["siteName"] + ".key"
     #print(json.dumps(targetSite, indent=4))
 
     # Capture the desired key from the user. This should be the absolute path to the signed .key file
@@ -178,7 +178,7 @@ def getCertificate(targetSite):
 
     # Default to the current certificate file, if there is one. Otherwise, assume siteName.crt
     defaultCertFile = targetSite["certificate"]
-    if not defaultCertFile: defaultCertFile = targetSite["userHome"] + "/certificates/" + targetSite["siteName"] + ".crt"
+    if not defaultCertFile: defaultCertFile = quiverDB + "/certificates/" + targetSite["siteName"] + ".crt"
 
     # Capture the desired certificate from the user. This should be the absolute path to the signed .crt file
     targetSite["certificate"] = input(style.BOLD + "Certificate (.crt) [" + defaultCertFile + "]: " + style.END).strip()
@@ -195,7 +195,7 @@ def getCertificate(targetSite):
 def createRootCertificate(targetSite):
     # Default to the current certificate key file, if there is one. Otherwise, assume siteName.key
     defaultCertKeyFile = targetSite["certRootKey"]
-    if not defaultCertKeyFile: defaultCertKeyFile = targetSite["userHome"] + "/certificates/" + targetSite["siteName"] + "_CA.key"
+    if not defaultCertKeyFile: defaultCertKeyFile = quiverDB + "/certificates/" + targetSite["siteName"] + "_CA.key"
     #print(json.dumps(targetSite, indent=4))
 
     # Capture the desired key from the user. This should be the absolute path to the signed .key file
@@ -204,7 +204,7 @@ def createRootCertificate(targetSite):
 
     # Default to the current certificate file, if there is one. Otherwise, assume siteName.crt
     defaultCertRootFile = targetSite["certRoot"]
-    if not defaultCertRootFile: defaultCertRootFile = targetSite["userHome"] + "/certificates/" + targetSite["siteName"] + "_CA.pem"
+    if not defaultCertRootFile: defaultCertRootFile = quiverDB + "/certificates/" + targetSite["siteName"] + "_CA.pem"
 
     # Capture the desired certificate from the user. This should be the absolute path to the signed .pem file
     targetSite["certRoot"] = input(style.BOLD + "Root Certificate (.pem) [" + defaultCertRootFile + "]: " + style.END).strip()
@@ -229,27 +229,27 @@ def createNewCertificates(targetSite):
         targetSite = createRootCertificate(targetSite)
     else:
         print(style.BOLD + "►►► Create Root Key" + style.END)
-        targetSite["certRootKey"] = targetSite["certPath"] + targetSite["siteName"] + "_CA" + targetSite["certID"] + ".key"
+        targetSite["certRootKey"] = targetSite["certPath"] + "/" + targetSite["siteName"] + "_CA" + targetSite["certID"] + ".key"
         runCommand("openssl genrsa -aes256 -out " + targetSite["certRootKey"] + " 2048")
 
         print(style.BOLD + "►►► Create Root Certificate" + style.END)
-        targetSite["certRoot"] = targetSite["certPath"] + targetSite["siteName"] + "_CA" + targetSite["certID"] + ".pem"
+        targetSite["certRoot"] = targetSite["certPath"] + "/" + targetSite["siteName"] + "_CA" + targetSite["certID"] + ".pem"
         oldRunCommand("openssl req -x509 -new -noenc -key " + targetSite["certRootKey"] + " -sha256 -days " + certDuration + " -subj '/C=XX/ST=XX/L=Quiver Locality/O=Fake Quiver Company/OU=Arrows/CN=" + targetSite["domainName"] + "' -out " + targetSite["certRoot"] )
 
     print(style.BOLD + "►►► Create Website key" + style.END)
-    targetSite["certKey"] = targetSite["certPath"] +  targetSite["siteName"] + "_" + targetSite["certID"] + ".key"
+    targetSite["certKey"] = targetSite["certPath"] + "/" + targetSite["siteName"] + "_" + targetSite["certID"] + ".key"
     runCommand("openssl genrsa -out " + targetSite["certKey"] + " 2048")
 
     print(style.BOLD + "►►► Create Certificate Request" + style.END)
-    targetSite["certRequest"] = targetSite["certPath"] + targetSite["siteName"] + "_" + targetSite["certID"] + ".csr"
+    targetSite["certRequest"] = targetSite["certPath"] + "/" + targetSite["siteName"] + "_" + targetSite["certID"] + ".csr"
     oldRunCommand("openssl req -new -key " + targetSite["certKey"] + " -subj '/C=XX/ST=XX/L=Quiver Locality/O=Fake Quiver Company/OU=Arrows/CN=" + targetSite["domainName"] + "' -out " + targetSite["certRequest"] )
 
     print(style.BOLD + "►►► Create Certificate Configuration File" + style.END)
-    targetSite["certConfig"] = targetSite["certPath"] + targetSite["siteName"] + "_" + targetSite["certID"] + ".ext"
+    targetSite["certConfig"] = targetSite["certPath"] + "/" + targetSite["siteName"] + "_" + targetSite["certID"] + ".ext"
     oldRunCommand("sed 's|__DOMAINNAME__|" + targetSite["domainName"] + "|g' " + quiverHome + "/base/default_cert.ext > " + targetSite["certConfig"])
 
     print(style.BOLD + "►►► Create Signed Website Certificate" + style.END)
-    targetSite["certificate"] = targetSite["certPath"] + targetSite["siteName"] + "_" + targetSite["certID"] + ".crt"
+    targetSite["certificate"] = targetSite["certPath"] + "/" + targetSite["siteName"] + "_" + targetSite["certID"] + ".crt"
     runCommand("openssl x509 -req -in " + targetSite["certRequest"] + " -CA " + targetSite["certRoot"] + " -CAkey " + targetSite["certRootKey"] + " -CAcreateserial -out " + targetSite["certificate"] + " -days " + certDuration + " -sha256 -extfile " + targetSite["certConfig"])
 
     #Save the dictionary with the updated certificate and key file paths
@@ -300,18 +300,23 @@ def showActiveCertificates(localDatabase = quiverDB):
     print("")
     print(6 * "-" , "Active Certificates" , 6 * "-")
 
-    siteFileList = sorted(os.listdir(localDatabase))
+    siteFileList = sorted(os.listdir(localDatabase + "/sites"))
+    trustedSiteCount = 0
 
     for i in siteFileList:
         if i.endswith(".json"):
-            with open(quiverDB + i, 'r') as inFile:
+            with open(quiverDB + "/sites/" + i, 'r') as inFile:
                 foundSite = json.load(inFile)
 
                 if foundSite["isTrusted"]:
+                    trustedSiteCount += 1
                     print(style.BOLD + "https://" + foundSite["domainName"] + style.END + "\t►►► " + foundSite["certificate"])
 
     print("")
-    print(style.BOLD + "0 " + style.END + "Back")    
+    if trustedSiteCount == 0:
+        print(background.BYELLOW + " No trusted sites found " + background.END)
+
+    #print(style.BOLD + "0 " + style.END + "Back")    
     print(21 * "-")
     print("")
 

@@ -147,13 +147,9 @@ def changeApacheOwnership(targetSite):
 def installWordPress(targetSite):
     print(style.BOLD + "►►► Installing WordPress..." + style.END)
 
-    exportDir = os.environ.get("HOME") + "/exports"
-
-    if not os.path.exists(exportDir): os.mkdir(exportDir)
-
-    runCommand("curl --output-dir " + exportDir + " --create-dirs -O https://wordpress.org/latest.tar.gz")
+    runCommand("curl --output-dir " + quiverDB + "/imports" + " --create-dirs -O https://wordpress.org/latest.tar.gz")
     runCommand("mkdir -p " + targetSite["domainHome"])
-    runCommand("tar -zxvf " + exportDir + "/latest.tar.gz" + " -C " + targetSite["domainHome"] + " --strip-components=1")
+    runCommand("tar -zxvf " + quiverDB + "/imports" + "/latest.tar.gz" + " -C " + targetSite["domainHome"] + " --strip-components=1")
 
     # Create the initial WordPress configuration file using the sample provided in the download
     shutil.copyfile(targetSite["domainHome"] + "/wp-config-sample.php", targetSite["domainHome"] + "/wp-config.php")

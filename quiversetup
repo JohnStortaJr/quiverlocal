@@ -3,9 +3,10 @@
 bold=$(tput bold)
 normal=$(tput sgr0)
 
-QUIVER_ROOT=`dirname "$(realpath $0)"`
 USER=`whoami`
 USER_HOME=/home/$USER
+QUIVER_ROOT=`dirname "$(realpath $0)"`
+QUIVER_DB="${USER_HOME}/quiverdb"
 APACHE_ROOT=/etc/apache2
 PYTHON_EXEC=`which python3`
 
@@ -60,6 +61,32 @@ function installPythonModules() {
 }
 
 
+function createQuiverDB() {
+    echo "${bold}►►► Creating QuiverDB...${normal}"
+
+    echo $QUIVER_DB
+    echo $QUIVER_DB/sites
+    echo $QUIVER_DB/imports
+    echo $QUIVER_DB/certificates
+
+    if test ! -d ${QUIVER_DB}; then
+        mkdir $QUIVER_DB
+    fi
+
+    if test ! -d ${QUIVER_DB}/sites; then
+        mkdir $QUIVER_DB
+    fi
+
+    if test ! -d ${QUIVER_DB}/imports; then
+        mkdir $QUIVER_DB
+    fi
+
+    if test ! -d ${QUIVER_DB}/certificates; then
+        mkdir $QUIVER_DB
+    fi
+}
+
+
 
 ### Change Apache to run as the current user
 function changeApacheUser() {
@@ -87,14 +114,16 @@ sudo echo ""
 
 printf " ${BACKGROUND_BBLUE}Setting Up QuiverLocal${BACKGROUND_END} \n\n"
 installRequiredPackages
+createQuiverDB
 createVirtualEnv
+
+changeApacheUser
+restartApache
 
 ### Enter virtual environment
 source .quiverenv/bin/activate
 
 installPythonModules
-changeApacheUser
-restartApache
 
 ### Exit virtual environment
 deactivate
