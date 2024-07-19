@@ -45,10 +45,13 @@ function installRequiredPackages() {
 
 ### Install all required Python modules
 function installPythonModules() {
+    #echo "${bold}►►► Installing pyOpenSSL...${normal}"
+    #pip3 install pyOpenSSL
+    #echo ""
+
     echo "${bold}►►► Installing MySQL Connector...${normal}"
     pip3 install mysql-connector-python
     echo ""
-
 }
 
 

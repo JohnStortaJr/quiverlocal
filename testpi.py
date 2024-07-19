@@ -301,6 +301,63 @@ def runCommand(commandString="whoami", asRoot=False):
     # Return the stdout from the execution
 #    return tempScriptResult.stdout.strip()
 
+
+def testoldRunCommand(commandString="whoami", asRoot=False):
+    print(commandString)
+    localPID = random.randint(111111, 999999)
+    tempScriptName = quiverHome + "/tmp/" + "tScript" + str(localPID)
+
+    # Create script file and write commands to be executed
+    with open(tempScriptName, "a") as outFile:
+        outFile.write("#!/usr/bin/bash\n")
+        outFile.write(commandString + "\n")
+
+    # Make the script executable
+    subprocess.run(["chmod", "755", tempScriptName], capture_output=True, text=True)
+
+    # Run the script and display the output (end='' removes the blank line at the end)
+    if asRoot:
+        tempScriptResult = subprocess.run(["sudo", tempScriptName], capture_output=True, text=True)
+    else:
+        tempScriptResult = subprocess.run([tempScriptName], capture_output=True, text=True)
+
+    # Delete the temporary script
+    subprocess.run(["rm", tempScriptName], capture_output=True, text=True)
+
+    # If stderr contains anything, print it immediately
+    if tempScriptResult.stderr.strip(): print("e:" + tempScriptResult.stderr)
+
+    # Need to see if I can add a line to the script to capture and return the exit code. And then use that here to determine success/failure
+
+    # Return the stdout from the execution
+    return tempScriptResult.stdout.strip()
+
+
+def testrunCommand(commandString="whoami", asRoot=False):
+    commandList = commandString.split()
+    print(commandString)
+
+    # Clear cached sudo access (this is for testing purposes only)
+    #subprocess.run(["sudo", "-k"], capture_output=True, text=True)
+
+    # Add sudo as the first element if the command is to be run as root
+    if asRoot:
+        commandList.insert(0, "sudo")
+    #print(commandList)
+
+    tempScriptResult = subprocess.run(commandList, capture_output=True, text=True)
+    print("e--->" + tempScriptResult.stderr)
+    #print("##################################")
+    #print("o--->" + tempScriptResult.stdout)
+    
+    # If stderr contains anything, print it immediately
+    #if tempScriptResult.stderr.strip(): print("e:" + tempScriptResult.stderr)
+
+    # Return the stdout from the execution
+    return tempScriptResult.stdout.strip()
+
+
+
 def captureTablePrefix(configPath):
     with open(configPath, 'r') as inFile:
         # Read all lines form the file into a list
@@ -400,5 +457,35 @@ domainHome = domainRoot + "/" + domainName
 
 #print(mydb)
 
-printColors()
+#printColors()
+
+certCAkey = "/home/jstorta/certificates/shenanigansCA20240701a.key"
+certCApem = "/home/jstorta/certificates/shenanigansCA20240701a.pem"
+certKey = "/home/jstorta/certificates/testkey.key"
+certRequest = "/home/jstorta/certificates/testrequest.csr"
+certConfig = "/home/jstorta/certificates/testconfig.ext"
+certificate = "/home/jstorta/certificates/testcert.crt"
+domainName = "test.local"
+
+
+print(style.BOLD + "►►► Create Website Key" + style.END)
+testrunCommand("openssl genrsa -out " + certKey + " 2048")
+print("")
+
+print(style.BOLD + "►►► Create Certificate Request" + style.END)
+#testoldRunCommand("openssl req -new -key " + certKey + " -subj /C=XX/ST=XX/L=Quiver Locality/O=Fake Quiver Company/OU=Arrows/CN=" + domainName + " -out " + certRequest )
+testrunCommand("openssl req -new -key " + certKey + " -subj \/C=XX\/ST=XX\/L=Quiver Locality\/O=Fake Quiver Company\/OU=Arrows\/CN=" + domainName + " -out " + certRequest )
+print("")
+
+print(style.BOLD + "►►► Create Certificate Configuration File" + style.END)
+#testoldRunCommand("sed 's|__DOMAINNAME__|" + domainName + "|g' " + quiverHome + "/base/default_cert.ext > " + certConfig)
+#shutil.copyfile(quiverHome + "/base/default_cert.ext", certConfig)
+#replaceFileText(certConfig, "__DOMAINNAME__", domainName)
+#oldRunCommand("sed 's|__DOMAINNAME__|" + targetSite["domainName"] + "|g' " + quiverHome + "/base/default_cert.ext > " + targetSite["certConfig"])
+#testrunCommand("sed 's|__DOMAINNAME__|" + domainName + "|g' " + quiverHome + "/base/default_cert.ext > " + certConfig)
+print("")
+
+print(style.BOLD + "►►► Create Signed Website Certificate" + style.END)
+#testrunCommand("openssl x509 -req -in " + certRequest + " -CA " + certCApem + " -CAkey " + certCAkey + " -CAcreateserial -out " + certificate + " -days " + str(365) + " -sha256 -extfile " + certConfig)
+print("")
 
