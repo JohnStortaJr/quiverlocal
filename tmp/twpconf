@@ -1,83 +1,71 @@
 <?php
 /**
- * The base configurations of the WordPress.
+ * The base configuration for WordPress
  *
- * This file has the following configurations: MySQL settings, Table Prefix,
- * Secret Keys, WordPress Language, and ABSPATH. You can find more information
- * by visiting {@link http://codex.wordpress.org/Editing_wp-config.php Editing
- * wp-config.php} Codex page. You can get the MySQL settings from your web host.
+ * The wp-config.php creation script uses this file during the installation.
+ * You don't have to use the website, you can copy this file to "wp-config.php"
+ * and fill in the values.
  *
- * This file is used by the wp-config.php creation script during the
- * installation. You don't have to use the web site, you can just copy this file
- * to "wp-config.php" and fill in the values.
+ * This file contains the following configurations:
+ *
+ * * Database settings
+ * * Secret keys
+ * * Database table prefix
+ * * ABSPATH
+ *
+ * @link https://developer.wordpress.org/advanced-administration/wordpress/wp-config/
  *
  * @package WordPress
  */
 
-// ** MySQL settings - You can get this info from your web host ** //
+// ** Database settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define('WP_CACHE', false);
-define( '', '/home/jstorta/domains/johnstortajr.com/wp-content/plugins/wp-super-cache/' );
-define( 'DB_NAME', 'dev5_localdev_db' );
+define( 'DB_NAME', 'dev4_localdev_db' );
 
-/** MySQL database username */
+/** Database username */
 define( 'DB_USER', 'wordpress' );
 
-/** MySQL database password */
+/** Database password */
 define( 'DB_PASSWORD', 'start123' );
 
-/** MySQL hostname */
+/** Database hostname */
 define( 'DB_HOST', 'localhost' );
 
-/** Database Charset to use in creating database tables. */
-define('DB_CHARSET', 'utf8');
+/** Database charset to use in creating database tables. */
+define( 'DB_CHARSET', 'utf8' );
 
-/** The Database Collate type. Don't change this if in doubt. */
-define('DB_COLLATE', '');
+/** The database collate type. Don't change this if in doubt. */
+define( 'DB_COLLATE', '' );
 
 /**#@+
- * Authentication Unique Keys and Salts.
+ * Authentication unique keys and salts.
  *
- * Change these to different unique phrases!
- * You can generate these using the {@link https://api.wordpress.org/secret-key/1.1/salt/ WordPress.org secret-key service}
- * You can change these at any point in time to invalidate all existing cookies. This will force all users to have to log in again.
+ * Change these to different unique phrases! You can generate these using
+ * the {@link https://api.wordpress.org/secret-key/1.1/salt/ WordPress.org secret-key service}.
+ *
+ * You can change these at any point in time to invalidate all existing cookies.
+ * This will force all users to have to log in again.
  *
  * @since 2.6.0
  */
-define( 'AUTH_KEY',         '7b7e2b11384c9770871405ef8ff1846d65185fd0e3b42a428e35061089de33c9' );
-define( 'SECURE_AUTH_KEY',  'bb8f5f322326f7a6f4901b66b79e9aa82225517ff427af2c8a8505e7b704cab6' );
-define( 'LOGGED_IN_KEY',    '32199d6fff85360405900ebd2d63148caedb0700337fc41c82d6655038f8db44' );
-define( 'NONCE_KEY',        '96d9a24fc55f52061b1580a8480027105e7c4295e666153b0d930f76ffff6407' );
-define( 'AUTH_SALT',        '6f282cca6965d218da6db836e27c6112188b73f07818353f295b04923139d8fe' );
-define( 'SECURE_AUTH_SALT', 'f55e3353c1d6f0ee6d43474ba371c909c6c1a6b9dc6200de0ea259a42b298eb6' );
-define( 'LOGGED_IN_SALT',   '789f2f7907d6bbdac459ecc62b2d9cebd3fa39a5fdcc893df9f8774a3d807d2e' );
-define( 'NONCE_SALT',       'd71ed41961c0d99cdc4e54e0475e243e7ef18cac5024c079457990cfe593ed0d' );
+define( 'AUTH_KEY',         '791ae094bd1a6de8f6b07904555696dbf80fef3e70ca3bc946d834bebb07ee56' );
+define( 'SECURE_AUTH_KEY',  'fef49a8c1302b8cbd215a66e9e5c519c664391646f93da3ef223f1aea828bfd4' );
+define( 'LOGGED_IN_KEY',    '1950056f58178e783a642d586e948ea8edb233986493e54f44f3bcd37db9e1a7' );
+define( 'NONCE_KEY',        '2d7a81941031950f6f02810fdca7a8dd54ae6a1de568c20e81aadc4f1252d070' );
+define( 'AUTH_SALT',        '58cc1899fbd944317e99ebf2376b3d3067b0cead3def4ab578cd3a7da1513485' );
+define( 'SECURE_AUTH_SALT', 'c8eb6374196816ad082351e22f90262aa482da26259282a673243b52b988cee4' );
+define( 'LOGGED_IN_SALT',   '241ee1da90e93648cc8cbbf12e0e476c78f226c91ddaf310dba4f9dd20a1b026' );
+define( 'NONCE_SALT',       'b07863a3de6d55fc76ce03f2824b5069651e47d2e6d38c601ed7de39269183c3' );
 
 /**#@-*/
 
 /**
- * WordPress Database Table prefix.
+ * WordPress database table prefix.
  *
- * You can have multiple installations in one database if you give each a unique
- * prefix. Only numbers, letters, and underscores please!
+ * You can have multiple installations in one database if you give each
+ * a unique prefix. Only numbers, letters, and underscores please!
  */
-$table_prefix  = 'wp_eduxzu_';
-
-/**
- * Limits total Post Revisions saved per Post/Page.
- * Change or comment this line out if you would like to increase or remove the limit.
- */
-define('WP_POST_REVISIONS',  10);
-
-/**
- * WordPress Localized Language, defaults to English.
- *
- * Change this to localize WordPress. A corresponding MO file for the chosen
- * language must be installed to wp-content/languages. For example, install
- * de_DE.mo to wp-content/languages and set WPLANG to 'de_DE' to enable German
- * language support.
- */
-define('WPLANG', '');
+$table_prefix = 'wp_';
 
 /**
  * For developers: WordPress debugging mode.
@@ -85,25 +73,24 @@ define('WPLANG', '');
  * Change this to true to enable the display of notices during development.
  * It is strongly recommended that plugin and theme developers use WP_DEBUG
  * in their development environments.
+ *
+ * For information on other constants that can be used for debugging,
+ * visit the documentation.
+ *
+ * @link https://developer.wordpress.org/advanced-administration/debug/debug-wordpress/
  */
-define('WP_DEBUG', false);
+define( 'WP_DEBUG', false );
 
-/**
- * Removing this could cause issues with your experience in the DreamHost panel
- */
+/* Add any custom values between this line and the "stop editing" line. */
 
-if (isset($_SERVER['HTTP_HOST']) && preg_match("/^(.*)\.dream\.website$/", $_SERVER['HTTP_HOST'])) {
-        $proto = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
-        define('WP_SITEURL', $proto . '://' . $_SERVER['HTTP_HOST']);
-        define('WP_HOME',    $proto . '://' . $_SERVER['HTTP_HOST']);
-}
 
-/* That's all, stop editing! Happy blogging. */
+
+/* That's all, stop editing! Happy publishing. */
 
 /** Absolute path to the WordPress directory. */
-if ( !defined('ABSPATH') )
-	define('ABSPATH', dirname(__FILE__) . '/');
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', __DIR__ . '/' );
+}
 
 /** Sets up WordPress vars and included files. */
-require_once(ABSPATH . 'wp-settings.php');
-
+require_once ABSPATH . 'wp-settings.php';

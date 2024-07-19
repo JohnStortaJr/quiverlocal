@@ -274,10 +274,6 @@ def addCertificate(targetSite):
     replaceFileText(quiverHome + "/tmp/thttpsconf", "__CERTKEYFILE__", targetSite["certKey"])
     replaceFileText(quiverHome + "/tmp/thttpsconf", "__CERTFILE__", targetSite["certificate"])
 
-    #runCommand("sed -i \"s|__CORECONFIG__|" + targetSite["domainConfig"] + "|g\" " + quiverHome + "/tmp/thttpsconf")
-    #runCommand("sed -i \"s|__CERTKEYFILE__|" + targetSite["certKey"] + "|g\" " + quiverHome + "/tmp/thttpsconf")
-    #runCommand("sed -i \"s|__CERTFILE__|" + targetSite["certificate"] + "|g\" " + quiverHome + "/tmp/thttpsconf")
-
     runCommand("mv " + quiverHome + "/tmp/thttpsconf " + targetSite["apacheConfig"], True)
     runCommand("chown root: " + targetSite["apacheConfig"], True)
 
@@ -295,8 +291,6 @@ def removeCertificate(targetSite):
     shutil.copyfile(quiverHome + "/base/default_http.conf", quiverHome + "/tmp/thttpconf")
 
     replaceFileText(quiverHome + "/tmp/thttpconf", "__CORECONFIG__", targetSite["domainConfig"])
-
-    #runCommand("sed -i \"s|__CORECONFIG__|" + targetSite["domainConfig"] + "|g\" " + quiverHome + "/tmp/thttpconf")
 
     runCommand("mv " + quiverHome + "/tmp/thttpconf " + targetSite["apacheConfig"], True)
     runCommand("chown root: " + targetSite["apacheConfig"], True)
