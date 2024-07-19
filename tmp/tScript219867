@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+mysql -u root < /home/jstorta/projects/quiverlocal/tmp/tdbconf

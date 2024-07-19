@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+mysql -u root dev4_localdev_db -e "UPDATE wp_options SET option_value = 'https://dev4.localdev.local' WHERE option_name = 'home';"

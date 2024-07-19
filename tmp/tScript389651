@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+openssl req -new -key /home/jstorta/certificates/dev4.localdev_26548779.key -subj '/C=XX/ST=XX/L=Quiver Locality/O=Fake Quiver Company/OU=Arrows/CN=dev4.localdev.local' -out /home/jstorta/certificates/dev4.localdev_26548779.csr

@@ -28,8 +28,8 @@ def createNewSite():
         print(style.BOLD + "Building site " + newSite["siteName"] + style.END)
 
         # Build site
-        installDependencies()
-        changeApacheOwnership(newSite)
+        #installDependencies()
+        #changeApacheOwnership(newSite)
         installWordPress(newSite)
         configureApache(newSite)
         createDatabase(newSite)
@@ -74,8 +74,8 @@ def importSite():
         print(style.BOLD + "Importing site " + newSite["siteName"] + style.END)
 
         # Import site
-        installDependencies()
-        changeApacheOwnership(newSite)
+        #installDependencies()
+        #changeApacheOwnership(newSite)
         importFiles(newSite)
         configureApache(newSite)
         createDatabase(newSite)

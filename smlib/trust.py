@@ -234,7 +234,7 @@ def createNewCertificates(targetSite):
 
         print(style.BOLD + "►►► Create Root Certificate" + style.END)
         targetSite["certRoot"] = targetSite["certPath"] + targetSite["siteName"] + "_CA" + targetSite["certID"] + ".pem"
-        runCommand("openssl req -x509 -new -noenc -key " + targetSite["certRootKey"] + " -sha256 -days " + certDuration + " -subj '/C=XX/ST=XX/L=Quiver Locality/O=Fake Quiver Company/OU=Arrows/CN=" + targetSite["domainName"] + "' -out " + targetSite["certRoot"] )
+        oldRunCommand("openssl req -x509 -new -noenc -key " + targetSite["certRootKey"] + " -sha256 -days " + certDuration + " -subj '/C=XX/ST=XX/L=Quiver Locality/O=Fake Quiver Company/OU=Arrows/CN=" + targetSite["domainName"] + "' -out " + targetSite["certRoot"] )
 
     print(style.BOLD + "►►► Create Website key" + style.END)
     targetSite["certKey"] = targetSite["certPath"] +  targetSite["siteName"] + "_" + targetSite["certID"] + ".key"
@@ -242,11 +242,11 @@ def createNewCertificates(targetSite):
 
     print(style.BOLD + "►►► Create Certificate Request" + style.END)
     targetSite["certRequest"] = targetSite["certPath"] + targetSite["siteName"] + "_" + targetSite["certID"] + ".csr"
-    runCommand("openssl req -new -key " + targetSite["certKey"] + " -subj '/C=XX/ST=XX/L=Quiver Locality/O=Fake Quiver Company/OU=Arrows/CN=" + targetSite["domainName"] + "' -out " + targetSite["certRequest"] )
+    oldRunCommand("openssl req -new -key " + targetSite["certKey"] + " -subj '/C=XX/ST=XX/L=Quiver Locality/O=Fake Quiver Company/OU=Arrows/CN=" + targetSite["domainName"] + "' -out " + targetSite["certRequest"] )
 
     print(style.BOLD + "►►► Create Certificate Configuration File" + style.END)
     targetSite["certConfig"] = targetSite["certPath"] + targetSite["siteName"] + "_" + targetSite["certID"] + ".ext"
-    runCommand("sed 's|__DOMAINNAME__|" + targetSite["domainName"] + "|g' " + quiverHome + "/base/default_cert.ext > " + targetSite["certConfig"])
+    oldRunCommand("sed 's|__DOMAINNAME__|" + targetSite["domainName"] + "|g' " + quiverHome + "/base/default_cert.ext > " + targetSite["certConfig"])
 
     print(style.BOLD + "►►► Create Signed Website Certificate" + style.END)
     targetSite["certificate"] = targetSite["certPath"] + targetSite["siteName"] + "_" + targetSite["certID"] + ".crt"
@@ -294,7 +294,7 @@ def removeCertificate(targetSite):
     # Any user customizations will be overwritten
     shutil.copyfile(quiverHome + "/base/default_http.conf", quiverHome + "/tmp/thttpconf")
 
-    replaceFileText(quiverHome + "/tmp/thttpsconf", "__CORECONFIG__", targetSite["domainConfig"])
+    replaceFileText(quiverHome + "/tmp/thttpconf", "__CORECONFIG__", targetSite["domainConfig"])
 
     #runCommand("sed -i \"s|__CORECONFIG__|" + targetSite["domainConfig"] + "|g\" " + quiverHome + "/tmp/thttpconf")
 

@@ -8,8 +8,6 @@ from smlib.trust import *
 from smlib.delete import *
 
 keepRunning=True
-print("VirtualEnv: " + sys.prefix)
-print("VirtualEnv: " + sys.base_prefix)
 
 def mainMenu():
     # Run a sudo command to capture the password as soon as the script is run

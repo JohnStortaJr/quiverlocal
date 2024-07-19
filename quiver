@@ -12,5 +12,9 @@ PYTHON_EXEC=`which python3`
 BACKGROUND_BBLUE="\u001b[44;1m"
 BACKGROUND_END="\u001b[0m"
 
+source .quiverenv/bin/activate
+
 $QUIVER_ROOT/quiver.py
+
+deactivate
 

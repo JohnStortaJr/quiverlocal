@@ -1,0 +1,97 @@
+#!/usr/bin/bash
+
+bold=$(tput bold)
+normal=$(tput sgr0)
+
+QUIVER_ROOT=`dirname "$(realpath $0)"`
+USER=`whoami`
+USER_HOME=/home/$USER
+APACHE_ROOT=/etc/apache2
+PYTHON_EXEC=`which python3`
+
+BACKGROUND_BBLUE="\u001b[44;1m"
+BACKGROUND_END="\u001b[0m"
+
+function createVirtualEnv() {
+    echo ""
+    echo "${bold}►►► Creating Quiver Virtual Environment${normal}"
+
+    pip3 install virtualenv
+    echo ""
+
+    virtualenv -p $PYTHON_EXEC .quiverenv
+    echo ""
+}
+
+### Install any of the required packages that are missing
+function installRequiredPackages() {
+    echo "${bold}►►► Installing Apache...${normal}"
+    sudo apt --yes install apache2 ghostscript libapache2-mod-php 
+    echo ""
+
+    echo "${bold}►►► Installing PHP...${normal}"
+    sudo apt --yes install php php-bcmath php-curl php-imagick php-intl php-json php-mbstring php-mysql php-xml php-zip
+    echo ""
+
+    echo "${bold}►►► Installing pip...${normal}"
+    sudo apt --yes install python3-pip
+    echo ""
+
+    echo "${bold}►►► Installing MySQL...${normal}"
+    sudo apt --yes install mysql-server
+    echo ""
+}
+
+
+### Install all required Python modules
+function installPythonModules() {
+    echo "${bold}►►► Installing MySQL Connector...${normal}"
+    pip3 install mysql-connector-python
+    echo ""
+
+}
+
+
+
+### Change Apache to run as the current user
+function changeApacheUser() {
+    echo "${bold}►►► Updating Apache Ownership${normal}"
+
+    cp $APACHE_ROOT/envvars $QUIVER_ROOT/tmp/tenvars
+    sed -i "s/APACHE_RUN_USER=www-data/APACHE_RUN_USER=$USER/g" $QUIVER_ROOT/tmp/tenvars
+    sed -i "s/APACHE_RUN_GROUP=www-data/APACHE_RUN_GROUP=$USER/g" $QUIVER_ROOT/tmp/tenvars
+    sudo mv $QUIVER_ROOT/tmp/tenvars $APACHE_ROOT/envvars
+    sudo chown root: $APACHE_ROOT/envvars
+
+    echo "Apache ownership set to ${USER}"
+    echo ""
+}
+
+
+### Restart Apache
+function restartApache() {
+    sudo systemctl restart apache2
+}
+
+# Run sudo to force password prior to executing the script
+sudo -k
+sudo echo ""
+
+printf " ${BACKGROUND_BBLUE}Setting Up QuiverLocal${BACKGROUND_END} \n\n"
+installRequiredPackages
+createVirtualEnv
+
+### Enter virtual environment
+source .quiverenv/bin/activate
+
+installPythonModules
+changeApacheUser
+restartApache
+
+### Exit virtual environment
+deactivate
+
+printf "${BACKGROUND_BBLUE} QuiverLocal setup complete ${BACKGROUND_END}\n"
+echo "Launch QuiverLocal using ${bold}${QUIVER_ROOT}/quiver${normal}"
+
+
