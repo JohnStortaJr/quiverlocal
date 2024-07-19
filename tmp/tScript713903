@@ -1,2 +1,0 @@
-#!/usr/bin/bash
-mysql -u root -e 'DROP DATABASE dev4_localdev_db;'

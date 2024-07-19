@@ -1,2 +1,0 @@
-#!/usr/bin/bash
-mysql -u root dev5_localdev_db < /home/jstorta/exports/storozon_com.sql

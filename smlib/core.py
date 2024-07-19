@@ -101,7 +101,7 @@ def oldRunCommand(commandString="whoami", asRoot=False):
         tempScriptResult = subprocess.run([tempScriptName], capture_output=True, text=True)
 
     # Delete the temporary script
-    #subprocess.run(["rm", tempScriptName], capture_output=True, text=True)
+    subprocess.run(["rm", tempScriptName], capture_output=True, text=True)
 
     # If stderr contains anything, print it immediately
     if tempScriptResult.stderr.strip(): print("e:" + tempScriptResult.stderr)

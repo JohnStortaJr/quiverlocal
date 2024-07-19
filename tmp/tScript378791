@@ -1,2 +1,0 @@
-#!/usr/bin/bash
-sed 's|__DOMAINNAME__|dev4.localdev.local|g' /home/jstorta/projects/quiverlocal/base/default_cert.ext > /home/jstorta/certificates/dev4.localdev_26548779.ext

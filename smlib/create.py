@@ -149,9 +149,13 @@ def changeApacheOwnership(targetSite):
 def installWordPress(targetSite):
     print(style.BOLD + "►►► Installing WordPress..." + style.END)
 
-    runCommand("curl --output-dir " + quiverHome + "/tmp --create-dirs -O https://wordpress.org/latest.tar.gz")
+    exportDir = os.environ.get("HOME") + "/exports"
+
+    os.mkdir(exportDir)
+
+    runCommand("curl --output-dir " + exportDir + " --create-dirs -O https://wordpress.org/latest.tar.gz")
     runCommand("mkdir -p " + targetSite["domainHome"])
-    runCommand("tar -zxvf " + quiverHome + "/tmp/latest.tar.gz" + " -C " + targetSite["domainHome"] + " --strip-components=1")
+    runCommand("tar -zxvf " + exportDir + "/latest.tar.gz" + " -C " + targetSite["domainHome"] + " --strip-components=1")
 
     # Download and extract the latest WordPress files
     #runCommand("curl https://wordpress.org/latest.tar.gz | tar zx -C " + targetSite["domainRoot"])

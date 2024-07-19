@@ -1,3 +1,0 @@
-<VirtualHost __DOMAINDIR__:80>
-	Include __CORECONFIG__.core
-</VirtualHost>
