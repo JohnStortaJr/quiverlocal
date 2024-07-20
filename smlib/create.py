@@ -30,6 +30,7 @@ def createNewSite():
         # Build site
         #installDependencies()
         #changeApacheOwnership(newSite)
+        directoryCheck(newSite)
         installWordPress(newSite)
         configureApache(newSite)
         createDatabase(newSite)
@@ -76,6 +77,7 @@ def importSite():
         # Import site
         #installDependencies()
         #changeApacheOwnership(newSite)
+        directoryCheck(newSite)
         importFiles(newSite)
         configureApache(newSite)
         createDatabase(newSite)
@@ -256,6 +258,17 @@ def getTablePrefix(targetSite):
         targetSite["tablePrefix"] =  foundLine.split("=")[1][2:-4]
 
     return targetSite
+
+
+### Make sure all directories in the site paths exist (create as needed)
+def directoryCheck(targetSite):
+    if not os.path.exists(targetSite["domainRoot"]): 
+        print("Creating path " + style.BOLD + targetSite["domainRoot"] + style.END)
+        os.mkdir(targetSite["domainRoot"])
+
+    if not os.path.exists(targetSite["domainRoot"] + "/config"): 
+        print("Creating path " + style.BOLD + targetSite["domainRoot"] + "/config" + style.END)
+        os.mkdir(targetSite["domainRoot"] + "/config")
 
 
 ### Import WordPress files from a user-specified export (tar.gz format)
