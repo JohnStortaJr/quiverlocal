@@ -15,6 +15,10 @@ BACKGROUND_END="\u001b[0m"
 
 ### Install any of the required packages that are missing
 function installRequiredPackages() {
+    echo "${bold}►►► Updating Repositories...${normal}"
+    sudo apt update 
+    echo ""
+
     echo "${bold}►►► Installing Apache...${normal}"
     sudo apt --yes install apache2 ghostscript libapache2-mod-php 
     echo ""
