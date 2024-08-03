@@ -79,7 +79,7 @@ def isUnique(key, value):
 
         if i.endswith(".json"):
 
-            with open(quiverDB + i, 'r') as inFile:
+            with open(quiverDB + "/sites/" + i, 'r') as inFile:
                 existingSite = json.load(inFile)
 
                 # If the existing config for the given key matches the provided value, then this entry is a duplicate
