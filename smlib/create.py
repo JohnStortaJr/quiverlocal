@@ -180,7 +180,7 @@ def configureApache(targetSite):
     runCommand("a2ensite " + targetSite["siteName"], True)
 
     # Disable the default site
-    runCommand("a2ensite 000-default", True)
+    runCommand("a2dissite 000-default", True)
 
     # Enable the mod_rewrite module
     runCommand("a2enmod rewrite", True)
