@@ -16,9 +16,9 @@
 
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define('WP_CACHE', true);
-define( '', '/home/jstorta/domains/oldegreybeardstavern.com/wp-content/plugins/wp-super-cache/' );
-define( 'DB_NAME', 'dev1_oldegreybeardstavern_db' );
+define('WP_CACHE', false);
+define( '', '/home/jstorta/domains/johnstortajr.com/wp-content/plugins/wp-super-cache/' );
+define( 'DB_NAME', 'dev1_johnstortajr_db' );
 
 /** MySQL database username */
 define( 'DB_USER', 'wordpress' );
@@ -44,14 +44,14 @@ define('DB_COLLATE', '');
  *
  * @since 2.6.0
  */
-define( 'AUTH_KEY',         '399587b3356cae891658f047af00fc16d324d693bf5414b004ee2c4d2b9a20e8' );
-define( 'SECURE_AUTH_KEY',  'e7ae3bae2e07c30549cc228f58803e06499e1a0ac0482da412e410802046cb35' );
-define( 'LOGGED_IN_KEY',    '23494a19070935b540a7f2d0e7bdf66ff699cb9c5ddf8cca891398e4912b4800' );
-define( 'NONCE_KEY',        'aacf5fcbf5dcf5c46dae320cd6cb080657b0a91900f0f317c37c15e0232792d7' );
-define( 'AUTH_SALT',        '77f841ad53f8b64f89ffa980171fed253752c9b2bbcc535a966bf53c83d5eb87' );
-define( 'SECURE_AUTH_SALT', 'b00fa93f8c413744e31685fae5461f9baaa76c9e9872579556ab03ca64e0b92b' );
-define( 'LOGGED_IN_SALT',   '537a58904bb9a01d88b78d25f229a4ec53a23672b5dc4cff27c4e921d810ab5a' );
-define( 'NONCE_SALT',       '059c6de80bb408e6f75d5e243a74b92a46a4ac2dcf739d8549c763fde265dfba' );
+define( 'AUTH_KEY',         '3b89ca917b138d2fa7df627791148d6ed29cdc3d2e662cad9ff6884a3712543c' );
+define( 'SECURE_AUTH_KEY',  '3612afc3fd8e643a0978c60fbcda8acbaf0e3a89e2a3d439a2fc5805c83406aa' );
+define( 'LOGGED_IN_KEY',    'ca7fab6b9e62a5fd952dca35de9038abb861f7373ec2b6ba8451ab985a7ff9e0' );
+define( 'NONCE_KEY',        '24141bb7e14091eb24d8b6fd0ca0d49e585a9a35eda9d538d68bcf5931a3d6d9' );
+define( 'AUTH_SALT',        '6b043536cd2c1276f70ab538ac6822f155a71abcacfef2fd8c6c4e662702cbca' );
+define( 'SECURE_AUTH_SALT', '94730534695e85bb410ae19c73a88bbec0879a771fd31c37f52783ee516794fd' );
+define( 'LOGGED_IN_SALT',   '2d12fd5eb8d676323791e4a1fd2c63460e499abd7e79146310ada152be227417' );
+define( 'NONCE_SALT',       '1dd1095fd8e626d07b247ed62cd5ae52d93abcb85b2b4943c27096ce78f5ff5d' );
 
 /**#@-*/
 
@@ -61,7 +61,7 @@ define( 'NONCE_SALT',       '059c6de80bb408e6f75d5e243a74b92a46a4ac2dcf739d8549c
  * You can have multiple installations in one database if you give each a unique
  * prefix. Only numbers, letters, and underscores please!
  */
-$table_prefix  = 'wp_ysav6i_';
+$table_prefix  = 'wp_eduxzu_';
 
 /**
  * Limits total Post Revisions saved per Post/Page.
@@ -96,7 +96,6 @@ if (isset($_SERVER['HTTP_HOST']) && preg_match("/^(.*)\.dream\.website$/", $_SER
         $proto = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
         define('WP_SITEURL', $proto . '://' . $_SERVER['HTTP_HOST']);
         define('WP_HOME',    $proto . '://' . $_SERVER['HTTP_HOST']);
-        define('JETPACK_STAGING_MODE', true);
 }
 
 /* That's all, stop editing! Happy blogging. */
@@ -107,3 +106,4 @@ if ( !defined('ABSPATH') )
 
 /** Sets up WordPress vars and included files. */
 require_once(ABSPATH . 'wp-settings.php');
+
