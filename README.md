@@ -1,4 +1,4 @@
-# quiverlocal
+# quiverlocal-py
 Tools for building local WordPress development environments in WSL (Windows Subsystem for Linux)
 
 This tool should work in most Ubuntu/Debian environments, but it has not been fully tested.
@@ -22,7 +22,7 @@ I have a background in Unix, so my initial plan was to create bash scripts for e
 - Delete Website
 - Add SSL Certificate to a Site
 
-These initial scripts have been moved to their own repository named [https://github.com/JohnStortaJr/quiverlocal-bash](quiverlocal-bash). It will be maintained separately from this Python implementation.
+These initial scripts have been moved to their own repository named [quiverlocal-bash](https://github.com/JohnStortaJr/quiverlocal-bash). It will be maintained separately from this Python implementation.
 
 ## Python
 While working on the bash scripts, I hit a snag. I wanted to store the site configurations in json files so that they could be retrieved and referenced for the different scripts. Unfortunately, the tool that everyone seemed to use to retrieve json info within bash scripts was jq. This tools worked fine for retrieving information from a file and parsing it, but creating new json files and updating existing ones got very cumbersome, very fast. 
